@@ -12,11 +12,15 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $httpClient = m::mock('Guzzle\Http\ClientInterface')
-            ->shouldReceive('get')
+        $httpClient = m::mock('Guzzle\Http\ClientInterface');
+
+        $missingRequest = m::mock('Guzzle\Http\Message\Request');
+        $missingRequest->shouldReceive('send')
+            ->withNoArgs()
+            ->andThrow(new \Guzzle\Http\Exception\ClientErrorResponseException());
+        $httpClient->shouldReceive('get')
             ->with('first_collection/missing_key', array(), array('auth' => array('api-key')))
-            ->andThrow(new \Guzzle\Http\Exception\ClientErrorResponseException())
-            ->getMock();
+            ->andReturn($missingRequest);
         $this->client = new Client('api-key', $httpClient);
     }
 
