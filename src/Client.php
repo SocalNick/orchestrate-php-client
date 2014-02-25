@@ -4,12 +4,35 @@ namespace SocalNick\Orchestrate;
 
 use Guzzle\Http as GuzzleHttp;
 
+/**
+ * Orchestrate.io Client
+ */
 class Client
 {
 
-  protected $apiKey;
+  /**
+   * The API key used for authentication
+   *
+   * @var string
+   */
+  protected $apiKey = '';
+
+  /**
+   * The HTTP client used to send requests
+   *
+   * @var GuzzleHttp\ClientInterface
+   */
   protected $httpClient;
 
+  /**
+   * Constructor
+   *
+   * The API key is required.
+   * If no HTTP client is passed, a Guzzle HTTP Client will be instantiated.
+   *
+   * @param string                     $apiKey
+   * @param GuzzleHttp\ClientInterface $httpClient
+   */
   public function __construct($apiKey, GuzzleHttp\ClientInterface $httpClient = null)
   {
     $this->apiKey = $apiKey;
@@ -26,6 +49,15 @@ class Client
     }
   }
 
+  /**
+   * Execute an operaction
+   *
+   * A successful operation will return result as an array.
+   * An unsuccessful operation will return null.
+   *
+   * @param  OperationInterface $op
+   * @return array|null
+   */
   public function execute(OperationInterface $op)
   {
     try {
@@ -37,6 +69,7 @@ class Client
         )
       )->send();
     } catch (GuzzleHttp\Exception\BadResponseException $e) {
+      // Client or server error
       return null;
     }
 
