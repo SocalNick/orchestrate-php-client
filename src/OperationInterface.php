@@ -2,7 +2,7 @@
 
 namespace SocalNick\Orchestrate;
 
-interface Operation
+interface OperationInterface
 {
   public function getCollection();
 }

@@ -2,7 +2,7 @@
 
 namespace SocalNick\Orchestrate;
 
-class KvFetchOperation implements Operation
+class KvFetchOperation implements OperationInterface
 {
   protected $collection;
   protected $key;

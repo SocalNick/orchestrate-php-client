@@ -26,7 +26,7 @@ class Client
     }
   }
 
-  public function execute(Operation $op)
+  public function execute(OperationInterface $op)
   {
     try {
       $response = $this->httpClient->get(
