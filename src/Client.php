@@ -61,19 +61,34 @@ class Client
   public function execute(OperationInterface $op)
   {
     try {
-      $response = $this->httpClient->get(
-        $op->getCollection() . '/' . $op->getKey(),
-        array(),
-        array(
-          'auth' => array($this->apiKey),
-        )
-      )->send();
+      if ($op instanceof PutOperationInterface) {
+        $request = $this->httpClient->put(
+          $op->getEndpoint(),
+          array(
+            'Content-Type' => 'application/json',
+          ),
+          $op->getData()
+        );
+
+      } else {
+        $request = $this->httpClient->get($op->getEndpoint());
+      }
+
+      $request->setAuth($this->apiKey);
+      $response = $request->send();
+
     } catch (GuzzleHttp\Exception\BadResponseException $e) {
       // Client or server error
       return null;
     }
 
-    return $response->json();
+    switch ($response->getStatusCode()) {
+      case 201:
+        return true;
+
+      default:
+        return $response->json();
+    }
   }
 
 }

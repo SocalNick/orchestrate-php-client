@@ -13,13 +13,8 @@ class KvFetchOperation implements OperationInterface
     $this->key = $key;
   }
 
-  public function getCollection()
+  public function getEndpoint()
   {
-    return $this->collection;
-  }
-
-  public function getKey()
-  {
-    return $this->key;
+    return $this->collection  . '/' . $this->key;
   }
 }
