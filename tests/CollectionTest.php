@@ -112,6 +112,27 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
       ->with('first_collection/first_key')
       ->andReturn($firstDeleteRequest);
 
+    $secondDeleteResponse = m::mock('Guzzle\Http\Message\Response');
+    $secondDeleteResponse->shouldReceive('getHeader')
+     ->with('ETag')
+     ->andReturn(null);
+    $secondDeleteResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(array());
+    $secondDeleteResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('');
+    $secondDeleteRequest = m::mock('Guzzle\Http\Message\Request');
+    $secondDeleteRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $secondDeleteRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($secondDeleteResponse);
+    $httpClient->shouldReceive('delete')
+      ->with('first_collection/first_key?purge=true')
+      ->andReturn($secondDeleteRequest);
+
     $this->client = new Client('api-key', $httpClient);
   }
 
@@ -159,6 +180,13 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
   public function testDelete()
   {
     $kvDeleteOp = new KvDeleteOperation("first_collection", "first_key");
+    $result = $this->client->execute($kvDeleteOp);
+    $this->assertTrue($result);
+  }
+
+  public function testDeleteWithPurge()
+  {
+    $kvDeleteOp = new KvDeleteOperation("first_collection", "first_key", true);
     $result = $this->client->execute($kvDeleteOp);
     $this->assertTrue($result);
   }
