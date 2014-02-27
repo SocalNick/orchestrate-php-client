@@ -17,4 +17,9 @@ class KvFetchOperation implements OperationInterface
   {
     return $this->collection  . '/' . $this->key;
   }
+
+  public function getObjectFromResponse($ref, $value = null, $rawValue = null)
+  {
+    return new KvObject($this->collection, $this->key, $ref, $value, $rawValue);
+  }
 }

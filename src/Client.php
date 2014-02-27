@@ -82,13 +82,11 @@ class Client
       return null;
     }
 
-    switch ($response->getStatusCode()) {
-      case 201:
-        return true;
+    $ref = str_replace('"', '', (string) $response->getHeader('ETag'));
+    $value = $response->json();
+    $rawValue = $response->getBody(true);
 
-      default:
-        return $response->json();
-    }
+    return $op->getObjectFromResponse($ref, $value, $rawValue);
   }
 
 }

@@ -5,6 +5,7 @@ namespace SocalNick\Orchestrate\Tests;
 use SocalNick\Orchestrate\Client;
 use SocalNick\Orchestrate\KvFetchOperation;
 use SocalNick\Orchestrate\KvPutOperation;
+use SocalNick\Orchestrate\KvObject;
 use Mockery as m;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
@@ -16,9 +17,15 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $httpClient = m::mock('Guzzle\Http\ClientInterface');
 
         $firstKeyResponse = m::mock('Guzzle\Http\Message\Response');
-        $firstKeyResponse->shouldReceive('getStatusCode')
+        $firstKeyResponse->shouldReceive('getHeader')
+            ->with('ETag')
+            ->andReturn('7b767e7cc8bdd6cb');
+        $firstKeyResponse->shouldReceive('json')
             ->withNoArgs()
-            ->andReturn(201);
+            ->andReturn(array());
+        $firstKeyResponse->shouldReceive('getBody')
+            ->with(true)
+            ->andReturn('');
         $firstKeyRequest = m::mock('Guzzle\Http\Message\Request');
         $firstKeyRequest->shouldReceive('setAuth')
             ->with('api-key')
@@ -31,9 +38,15 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
             ->andReturn($firstKeyRequest);
 
         $secondKeyResponse = m::mock('Guzzle\Http\Message\Response');
-        $secondKeyResponse->shouldReceive('getStatusCode')
+        $secondKeyResponse->shouldReceive('getHeader')
+            ->with('ETag')
+            ->andReturn('741357981fd7b5cb');
+        $secondKeyResponse->shouldReceive('json')
             ->withNoArgs()
-            ->andReturn(201);
+            ->andReturn(array());
+        $secondKeyResponse->shouldReceive('getBody')
+            ->with(true)
+            ->andReturn('');
         $secondKeyRequest = m::mock('Guzzle\Http\Message\Request');
         $secondKeyRequest->shouldReceive('setAuth')
             ->with('api-key')
@@ -57,12 +70,15 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
             ->andReturn($missingRequest);
 
         $godfatherResponse = m::mock('Guzzle\Http\Message\Response');
-        $godfatherResponse->shouldReceive('getStatusCode')
-            ->withNoArgs()
-            ->andReturn(200);
+        $godfatherResponse->shouldReceive('getHeader')
+            ->with('ETag')
+            ->andReturn('9c1bc18e60d93848');
         $godfatherResponse->shouldReceive('json')
             ->withNoArgs()
             ->andReturn(json_decode('{"Title": "The Godfather","Released": "24 Mar 1972"}', true));
+        $godfatherResponse->shouldReceive('getBody')
+            ->with(true)
+            ->andReturn('{"Title": "The Godfather","Released": "24 Mar 1972"}');
         $godfatherRequest = m::mock('Guzzle\Http\Message\Request');
         $godfatherRequest->shouldReceive('setAuth')
             ->with('api-key')
@@ -85,32 +101,36 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testPutWithoutCollectionCreatesCollection()
     {
         $kvPutOp = new KvPutOperation("first_collection", "first_key", json_encode(array("name" => "Nick")));
-        $result = $this->client->execute($kvPutOp);
-        $this->assertTrue($result);
+        $kvObject = $this->client->execute($kvPutOp);
+        $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+        $this->assertEquals('7b767e7cc8bdd6cb', $kvObject->getRef());
     }
 
     public function testPutWithCollection()
     {
         $kvPutOp = new KvPutOperation("first_collection", "second_key", json_encode(array("name" => "John")));
-        $result = $this->client->execute($kvPutOp);
-        $this->assertTrue($result);
+        $kvObject = $this->client->execute($kvPutOp);
+        $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+        $this->assertEquals('741357981fd7b5cb', $kvObject->getRef());
     }
 
     public function testKeyDoesNotExist404()
     {
         $kvFetchOp = new KvFetchOperation("first_collection", "missing_key");
-        $result = $this->client->execute($kvFetchOp);
-        $this->assertNull($result);
+        $kvObject = $this->client->execute($kvFetchOp);
+        $this->assertNull($kvObject);
     }
 
     public function testGet()
     {
         $kvFetchOp = new KvFetchOperation("films", "the_godfather");
-        $result = $this->client->execute($kvFetchOp);
-        $this->assertInternalType('array', $result);
-        $this->assertArrayHasKey('Title', $result);
-        $this->assertArrayHasKey('Released', $result);
-        $this->assertEquals('The Godfather', $result['Title']);
-        $this->assertEquals('24 Mar 1972', $result['Released']);
+        $kvObject = $this->client->execute($kvFetchOp);
+        $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+        $this->assertEquals('9c1bc18e60d93848', $kvObject->getRef());
+        $value = $kvObject->getValue();
+        $this->assertArrayHasKey('Title', $value);
+        $this->assertArrayHasKey('Released', $value);
+        $this->assertEquals('The Godfather', $value['Title']);
+        $this->assertEquals('24 Mar 1972', $value['Released']);
     }
 }
