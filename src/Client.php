@@ -69,7 +69,8 @@ class Client
           ),
           $op->getData()
         );
-
+      } elseif ($op instanceof DeleteOperationInterface) {
+        $request = $this->httpClient->delete($op->getEndpoint());
       } else {
         $request = $this->httpClient->get($op->getEndpoint());
       }

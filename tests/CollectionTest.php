@@ -3,6 +3,7 @@
 namespace SocalNick\Orchestrate\Tests;
 
 use SocalNick\Orchestrate\Client;
+use SocalNick\Orchestrate\KvDeleteOperation;
 use SocalNick\Orchestrate\KvFetchOperation;
 use SocalNick\Orchestrate\KvPutOperation;
 use SocalNick\Orchestrate\KvObject;
@@ -90,6 +91,27 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
       ->with('films/the_godfather')
       ->andReturn($godfatherRequest);
 
+    $firstDeleteResponse = m::mock('Guzzle\Http\Message\Response');
+    $firstDeleteResponse->shouldReceive('getHeader')
+     ->with('ETag')
+     ->andReturn(null);
+    $firstDeleteResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(array());
+    $firstDeleteResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('');
+    $firstDeleteRequest = m::mock('Guzzle\Http\Message\Request');
+    $firstDeleteRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $firstDeleteRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($firstDeleteResponse);
+    $httpClient->shouldReceive('delete')
+      ->with('first_collection/first_key')
+      ->andReturn($firstDeleteRequest);
+
     $this->client = new Client('api-key', $httpClient);
   }
 
@@ -132,5 +154,12 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     $this->assertArrayHasKey('Released', $value);
     $this->assertEquals('The Godfather', $value['Title']);
     $this->assertEquals('24 Mar 1972', $value['Released']);
+  }
+
+  public function testDelete()
+  {
+    $kvDeleteOp = new KvDeleteOperation("first_collection", "first_key");
+    $result = $this->client->execute($kvDeleteOp);
+    $this->assertTrue($result);
   }
 }
