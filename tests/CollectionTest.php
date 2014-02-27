@@ -30,6 +30,21 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
             ->with('first_collection/first_key', array('Content-Type'=>'application/json'), '{"name":"Nick"}')
             ->andReturn($firstKeyRequest);
 
+        $secondKeyResponse = m::mock('Guzzle\Http\Message\Response');
+        $secondKeyResponse->shouldReceive('getStatusCode')
+            ->withNoArgs()
+            ->andReturn(201);
+        $secondKeyRequest = m::mock('Guzzle\Http\Message\Request');
+        $secondKeyRequest->shouldReceive('setAuth')
+            ->with('api-key')
+            ->andReturn(m::self());
+        $secondKeyRequest->shouldReceive('send')
+            ->withNoArgs()
+            ->andReturn($secondKeyResponse);
+        $httpClient->shouldReceive('put')
+            ->with('first_collection/second_key', array('Content-Type'=>'application/json'), '{"name":"John"}')
+            ->andReturn($secondKeyRequest);
+
         $missingRequest = m::mock('Guzzle\Http\Message\Request');
         $missingRequest->shouldReceive('setAuth')
             ->with('api-key')
@@ -70,6 +85,13 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testPutWithoutCollectionCreatesCollection()
     {
         $kvPutOp = new KvPutOperation("first_collection", "first_key", json_encode(array("name" => "Nick")));
+        $result = $this->client->execute($kvPutOp);
+        $this->assertTrue($result);
+    }
+
+    public function testPutWithCollection()
+    {
+        $kvPutOp = new KvPutOperation("first_collection", "second_key", json_encode(array("name" => "John")));
         $result = $this->client->execute($kvPutOp);
         $this->assertTrue($result);
     }
