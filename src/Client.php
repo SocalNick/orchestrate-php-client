@@ -64,9 +64,7 @@ class Client
       if ($op instanceof PutOperationInterface) {
         $request = $this->httpClient->put(
           $op->getEndpoint(),
-          array(
-            'Content-Type' => 'application/json',
-          ),
+          $op->getHeaders(),
           $op->getData()
         );
       } elseif ($op instanceof DeleteOperationInterface) {

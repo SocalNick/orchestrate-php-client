@@ -38,6 +38,30 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->with('first_collection/second_key', array('Content-Type'=>'application/json'), '{"name":"John"}')
       ->andReturn($secondKeyRequest);
 
+    $secondKeyMatchResponse = m::mock('Guzzle\Http\Message\Response');
+    $secondKeyMatchResponse->shouldReceive('getHeader')
+      ->with('ETag')
+      ->andReturn('0d1f15ab524a5c5a');
+    $secondKeyMatchResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(array());
+    $secondKeyMatchResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('');
+    $secondKeyMatchRequest = m::mock('Guzzle\Http\Message\Request');
+    $secondKeyMatchRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $secondKeyMatchRequest->shouldReceive('setHeader')
+      ->with(array('If-Match' => '741357981fd7b5cb'))
+      ->andReturn(m::self());
+    $secondKeyMatchRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($secondKeyMatchResponse);
+    $httpClient->shouldReceive('put')
+      ->with('first_collection/second_key', array('Content-Type'=>'application/json', 'If-Match'=>'"741357981fd7b5cb"'), '{"name":"Terry"}')
+      ->andReturn($secondKeyMatchRequest);
+
     $missingRequest = m::mock('Guzzle\Http\Message\Request');
     $missingRequest->shouldReceive('setAuth')
       ->with('api-key')
@@ -126,6 +150,14 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $kvObject = $this->client->execute($kvPutOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertEquals('741357981fd7b5cb', $kvObject->getRef());
+  }
+
+  public function testPutIfMatch()
+  {
+    $kvPutOp = new KvPutOperation("first_collection", "second_key", json_encode(array("name" => "Terry")), array('if-match' => '741357981fd7b5cb'));
+    $kvObject = $this->client->execute($kvPutOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+    $this->assertEquals('0d1f15ab524a5c5a', $kvObject->getRef());
   }
 
   public function testKeyDoesNotExist404()
