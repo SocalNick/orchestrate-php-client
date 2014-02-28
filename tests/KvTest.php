@@ -62,6 +62,20 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->with('first_collection/second_key', array('Content-Type'=>'application/json', 'If-Match'=>'"741357981fd7b5cb"'), '{"name":"Terry"}')
       ->andReturn($secondKeyMatchRequest);
 
+    $secondKeyNoneMatchRequest = m::mock('Guzzle\Http\Message\Request');
+    $secondKeyNoneMatchRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $secondKeyNoneMatchRequest->shouldReceive('setHeader')
+      ->with(array('If-None-Match' => '*'))
+      ->andReturn(m::self());
+    $secondKeyNoneMatchRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andThrow(new \Guzzle\Http\Exception\ClientErrorResponseException());
+    $httpClient->shouldReceive('put')
+      ->with('first_collection/second_key', array('Content-Type'=>'application/json', 'If-None-Match'=>'"*"'), '{"name":"Bill"}')
+      ->andReturn($secondKeyNoneMatchRequest);
+
     $missingRequest = m::mock('Guzzle\Http\Message\Request');
     $missingRequest->shouldReceive('setAuth')
       ->with('api-key')
@@ -158,6 +172,13 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $kvObject = $this->client->execute($kvPutOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertEquals('0d1f15ab524a5c5a', $kvObject->getRef());
+  }
+
+  public function testPutIfNoneMatch()
+  {
+    $kvPutOp = new KvPutOperation("first_collection", "second_key", json_encode(array("name" => "Bill")), array('if-none-match' => '*'));
+    $kvObject = $this->client->execute($kvPutOp);
+    $this->assertNull($kvObject);
   }
 
   public function testKeyDoesNotExist404()

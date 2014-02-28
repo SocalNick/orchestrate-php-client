@@ -23,7 +23,7 @@ class KvPutOperation extends KvFetchOperation implements PutOperationInterface
     if (array_key_exists('if-match', $this->conditional)) {
       $headers['If-Match'] = "\"{$this->conditional['if-match']}\"";
     } elseif (array_key_exists('if-none-match', $this->conditional)) {
-      $headers['If-None-Match'] = '*';
+      $headers['If-None-Match'] = '"*"';
     }
 
     return $headers;
