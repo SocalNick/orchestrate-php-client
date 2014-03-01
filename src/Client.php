@@ -81,11 +81,20 @@ class Client
       return null;
     }
 
-    $ref = str_replace('"', '', (string) $response->getHeader('ETag'));
+    $refLink = null;
+    if ($response->hasHeader('ETag')) {
+      $refLink = str_replace('"', '', (string) $response->getHeader('ETag'));
+    } elseif ($response->hasHeader('Link')) {
+      $refLink = str_replace(
+        array('<', '>; rel="next"'),
+        array('', ''),
+        (string) $response->getHeader('Link')
+      );
+    }
     $value = $response->json();
     $rawValue = $response->getBody(true);
 
-    return $op->getObjectFromResponse($ref, $value, $rawValue);
+    return $op->getObjectFromResponse($refLink, $value, $rawValue);
   }
 
 }

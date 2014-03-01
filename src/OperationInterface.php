@@ -8,5 +8,5 @@ interface OperationInterface
 {
   public function getEndpoint();
 
-  public function getObjectFromResponse($ref, $value = null, $rawValue = null);
+  public function getObjectFromResponse($refLink, $value = null, $rawValue = null);
 }

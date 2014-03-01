@@ -5,8 +5,10 @@ namespace SocalNick\Orchestrate\Tests;
 use SocalNick\Orchestrate\Client;
 use SocalNick\Orchestrate\KvDeleteOperation;
 use SocalNick\Orchestrate\KvFetchOperation;
+use SocalNick\Orchestrate\KvListOperation;
 use SocalNick\Orchestrate\KvPutOperation;
 use SocalNick\Orchestrate\KvObject;
+use SocalNick\Orchestrate\KvListObject;
 use Mockery as m;
 
 class KvTest extends \PHPUnit_Framework_TestCase
@@ -18,6 +20,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $httpClient = m::mock('Guzzle\Http\ClientInterface');
 
     $secondKeyResponse = m::mock('Guzzle\Http\Message\Response');
+    $secondKeyResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(true);
     $secondKeyResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('741357981fd7b5cb');
@@ -39,6 +44,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->andReturn($secondKeyRequest);
 
     $secondKeyMatchResponse = m::mock('Guzzle\Http\Message\Response');
+    $secondKeyMatchResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(true);
     $secondKeyMatchResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('0d1f15ab524a5c5a');
@@ -88,6 +96,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->andReturn($missingRequest);
 
     $godfatherResponse = m::mock('Guzzle\Http\Message\Response');
+    $godfatherResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(true);
     $godfatherResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('9c1bc18e60d93848');
@@ -109,9 +120,12 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->andReturn($godfatherRequest);
 
     $firstDeleteResponse = m::mock('Guzzle\Http\Message\Response');
-    $firstDeleteResponse->shouldReceive('getHeader')
-     ->with('ETag')
-     ->andReturn(null);
+    $firstDeleteResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(false);
+    $firstDeleteResponse->shouldReceive('hasHeader')
+      ->with('Link')
+      ->andReturn(false);
     $firstDeleteResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -130,9 +144,12 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->andReturn($firstDeleteRequest);
 
     $secondDeleteResponse = m::mock('Guzzle\Http\Message\Response');
-    $secondDeleteResponse->shouldReceive('getHeader')
-     ->with('ETag')
-     ->andReturn(null);
+    $secondDeleteResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(false);
+    $secondDeleteResponse->shouldReceive('hasHeader')
+      ->with('Link')
+      ->andReturn(false);
     $secondDeleteResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -149,6 +166,84 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $httpClient->shouldReceive('delete')
       ->with('first_collection/first_key?purge=true')
       ->andReturn($secondDeleteRequest);
+
+    $defaultListResponse = m::mock('Guzzle\Http\Message\Response');
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(false);
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('Link')
+      ->andReturn(false);
+    $defaultListResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(json_decode('{"count":10,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}', true));
+    $defaultListResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('{"count":10,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}');
+    $defaultListRequest = m::mock('Guzzle\Http\Message\Request');
+    $defaultListRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $defaultListRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($defaultListResponse);
+    $httpClient->shouldReceive('get')
+      ->with('films?limit=10')
+      ->andReturn($defaultListRequest);
+
+    $defaultListResponse = m::mock('Guzzle\Http\Message\Response');
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(false);
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('Link')
+      ->andReturn(true);
+    $defaultListResponse->shouldReceive('getHeader')
+      ->with('Link')
+      ->andReturn('</v0/films?limit=5&afterKey=pulp_fiction>; rel="next"');
+    $defaultListResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(json_decode('{"count":5,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}', true));
+    $defaultListResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('{"count":5,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}');
+    $defaultListRequest = m::mock('Guzzle\Http\Message\Request');
+    $defaultListRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $defaultListRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($defaultListResponse);
+    $httpClient->shouldReceive('get')
+      ->with('films?limit=5&startKey=anchorman')
+      ->andReturn($defaultListRequest);
+
+    $defaultListResponse = m::mock('Guzzle\Http\Message\Response');
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(false);
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('Link')
+      ->andReturn(true);
+    $defaultListResponse->shouldReceive('getHeader')
+      ->with('Link')
+      ->andReturn('</v0/films?limit=5&afterKey=shawshank_redemption>; rel="next"');
+    $defaultListResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(json_decode('{"count":5,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}', true));
+    $defaultListResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('{"count":5,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}');
+    $defaultListRequest = m::mock('Guzzle\Http\Message\Request');
+    $defaultListRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $defaultListRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($defaultListResponse);
+    $httpClient->shouldReceive('get')
+      ->with('films?limit=5&afterKey=anchorman')
+      ->andReturn($defaultListRequest);
 
     $this->client = new Client('api-key', $httpClient);
   }
@@ -213,5 +308,32 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $kvDeleteOp = new KvDeleteOperation("first_collection", "first_key", true);
     $result = $this->client->execute($kvDeleteOp);
     $this->assertTrue($result);
+  }
+
+  public function testListDefaultLimit()
+  {
+    $kvListOp = new KvListOperation("films", 10);
+    $kvListObject = $this->client->execute($kvListOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
+    $this->assertEquals(10, $kvListObject->count());
+    $this->assertNull($kvListObject->getLink());
+  }
+
+  public function testListInclusiveStartKey()
+  {
+    $kvListOp = new KvListOperation("films", 5, 'anchorman');
+    $kvListObject = $this->client->execute($kvListOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
+    $this->assertEquals(5, $kvListObject->count());
+    $this->assertEquals('/v0/films?limit=5&afterKey=pulp_fiction', $kvListObject->getLink());
+  }
+
+  public function testListExclusiveAfterKey()
+  {
+    $kvListOp = new KvListOperation("films", 5, null, 'anchorman');
+    $kvListObject = $this->client->execute($kvListOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
+    $this->assertEquals(5, $kvListObject->count());
+    $this->assertEquals('/v0/films?limit=5&afterKey=shawshank_redemption', $kvListObject->getLink());
   }
 }

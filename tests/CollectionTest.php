@@ -18,6 +18,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     $httpClient = m::mock('Guzzle\Http\ClientInterface');
 
     $firstKeyResponse = m::mock('Guzzle\Http\Message\Response');
+    $firstKeyResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(true);
     $firstKeyResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('7b767e7cc8bdd6cb');
