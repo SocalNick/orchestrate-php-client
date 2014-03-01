@@ -6,16 +6,18 @@ class KvFetchOperation implements OperationInterface
 {
   protected $collection;
   protected $key;
+  protected $ref;
 
-  public function __construct($collection, $key)
+  public function __construct($collection, $key, $ref = null)
   {
     $this->collection = $collection;
     $this->key = $key;
+    $this->ref = $ref;
   }
 
   public function getEndpoint()
   {
-    return $this->collection  . '/' . $this->key;
+    return $this->collection  . '/' . $this->key . ($this->ref ? '/refs/' . $this->ref : '');
   }
 
   public function getObjectFromResponse($ref, $value = null, $rawValue = null)

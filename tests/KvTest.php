@@ -119,6 +119,30 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->with('films/the_godfather')
       ->andReturn($godfatherRequest);
 
+    $previousRefResponse = m::mock('Guzzle\Http\Message\Response');
+    $previousRefResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(true);
+    $previousRefResponse->shouldReceive('getHeader')
+      ->with('ETag')
+      ->andReturn('741357981fd7b5cb');
+    $previousRefResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(json_decode('{"name":"John"}', true));
+    $previousRefResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('{"name":"John"}');
+    $previousRefRequest = m::mock('Guzzle\Http\Message\Request');
+    $previousRefRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $previousRefRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($previousRefResponse);
+    $httpClient->shouldReceive('get')
+      ->with('first_collection/second_key/refs/741357981fd7b5cb')
+      ->andReturn($previousRefRequest);
+
     $firstDeleteResponse = m::mock('Guzzle\Http\Message\Response');
     $firstDeleteResponse->shouldReceive('hasHeader')
       ->with('ETag')
@@ -294,6 +318,17 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $this->assertArrayHasKey('Released', $value);
     $this->assertEquals('The Godfather', $value['Title']);
     $this->assertEquals('24 Mar 1972', $value['Released']);
+  }
+
+  public function testGetPreviousRef()
+  {
+    $kvFetchOp = new KvFetchOperation("first_collection", "second_key", "741357981fd7b5cb");
+    $kvObject = $this->client->execute($kvFetchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+    $this->assertEquals('741357981fd7b5cb', $kvObject->getRef());
+    $value = $kvObject->getValue();
+    $this->assertArrayHasKey('name', $value);
+    $this->assertEquals('John', $value['name']);
   }
 
   public function testDelete()
