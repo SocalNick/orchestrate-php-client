@@ -22,11 +22,6 @@ class KvListObject
     return $this->collection;
   }
 
-  public function getKey()
-  {
-    return $this->key;
-  }
-
   public function getLink()
   {
     return $this->link;
