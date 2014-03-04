@@ -39,6 +39,30 @@ class SearchTest extends \PHPUnit_Framework_TestCase
       ->with('films/?query=%2A&limit=10&offset=0')
       ->andReturn($defaultSearchRequest);
 
+    $searchResponse = m::mock('Guzzle\Http\Message\Response');
+    $searchResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(false);
+    $searchResponse->shouldReceive('hasHeader')
+      ->with('Link')
+      ->andReturn(false);
+    $searchResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(json_decode('{"count":2,"total_count":6,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}', true));
+    $searchResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('{"count":2,"total_count":6,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}');
+    $searchRequest = m::mock('Guzzle\Http\Message\Request');
+    $searchRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $searchRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($searchResponse);
+    $httpClient->shouldReceive('get')
+      ->with('films/?query=Genre%3A%2ACrime%2A&limit=2&offset=2')
+      ->andReturn($searchRequest);
+
     $this->client = new Client('api-key', $httpClient);
   }
 
@@ -54,6 +78,15 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     $this->assertInstanceOf('SocalNick\Orchestrate\SearchResult', $searchResult);
     $this->assertEquals(10, $searchResult->count());
     $this->assertEquals(10, $searchResult->totalCount());
+  }
+
+  public function testSearchWithQueryLimitOffset()
+  {
+    $searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2);
+    $searchResult = $this->client->execute($searchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\SearchResult', $searchResult);
+    $this->assertEquals(2, $searchResult->count());
+    $this->assertEquals(6, $searchResult->totalCount());
   }
 
 }
