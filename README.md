@@ -150,3 +150,42 @@ $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", 1395029
 $evObject = $client->execute($evFetchOp);
 $count = $evObject->count(); // 1
 ```
+
+# Graph
+
+## Put
+```php
+use SocalNick\Orchestrate\GraphPutOperation;
+$graphPutOp = new GraphPutOperation("films", "the_godfather", "sequel", "films", "the_godfather_part_2");
+$result = $client->execute($graphPutOp); // true
+
+$graphPutOp = new GraphPutOperation("films", "the_godfather_part_2", "sequel", "films", "the_godfather_part_3");
+$result = $client->execute($graphPutOp); // true
+```
+
+## Get
+```php
+use SocalNick\Orchestrate\GraphFetchOperation;
+$graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel");
+$graphObject = $client->execute($graphFetchOp);
+$count = $graphObject->count(); // 1
+```
+
+## Delete
+```php
+use SocalNick\Orchestrate\GraphDeleteOperation;
+$graphDeleteOp = new GraphDeleteOperation("films", "the_godfather", "sequel", "films", "the_godfather_part_2");
+$result = $client->execute($graphDeleteOp); // true
+
+$graphDeleteOp = new GraphDeleteOperation("films", "the_godfather_part_2", "sequel", "films", "the_godfather_part_3");
+$result = $client->execute($graphDeleteOp); // true
+
+use SocalNick\Orchestrate\GraphFetchOperation;
+$graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel");
+$graphObject = $client->execute($graphFetchOp);
+$count = $graphObject->count(); // 0
+
+$graphFetchOp = new GraphFetchOperation("films", "the_godfather_part_2", "sequel");
+$graphObject = $client->execute($graphFetchOp);
+$count = $graphObject->count(); // 0
+```
