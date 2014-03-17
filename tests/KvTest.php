@@ -197,7 +197,10 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $defaultListResponse->shouldReceive('hasHeader')
       ->with('Link')
-      ->andReturn(false);
+      ->andReturn(true);
+    $defaultListResponse->shouldReceive('getHeader')
+      ->with('Link')
+      ->andReturn('</v0/films?limit=10&afterKey=the_godfather_part_2>; rel="next"');
     $defaultListResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count":10,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}', true));
@@ -351,7 +354,7 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $kvListObject = $this->client->execute($kvListOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
     $this->assertEquals(10, $kvListObject->count());
-    $this->assertNull($kvListObject->getLink());
+    $this->assertEquals('/v0/films?limit=10&afterKey=the_godfather_part_2', $kvListObject->getLink());
   }
 
   public function testListInclusiveStartKey()

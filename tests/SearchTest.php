@@ -24,10 +24,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $defaultSearchResponse->shouldReceive('json')
       ->withNoArgs()
-      ->andReturn(json_decode('{"count":10,"total_count":10,"results": [{"path": {"collection": "films","key": "shawshank_redemption","ref": "6328a27142985690"}}]}', true));
+      ->andReturn(json_decode('{"count":10,"total_count":12,"results": [{"path": {"collection": "films","key": "shawshank_redemption","ref": "6328a27142985690"}}]}', true));
     $defaultSearchResponse->shouldReceive('getBody')
       ->with(true)
-      ->andReturn('{"count":10,"total_count":10,"results": [{"path": {"collection": "films","key": "shawshank_redemption","ref": "6328a27142985690"}}]}');
+      ->andReturn('{"count":10,"total_count":12,"results": [{"path": {"collection": "films","key": "shawshank_redemption","ref": "6328a27142985690"}}]}');
     $defaultSearchRequest = m::mock('Guzzle\Http\Message\Request');
     $defaultSearchRequest->shouldReceive('setAuth')
       ->with('api-key')
@@ -48,10 +48,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $searchResponse->shouldReceive('json')
       ->withNoArgs()
-      ->andReturn(json_decode('{"count":2,"total_count":6,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}', true));
+      ->andReturn(json_decode('{"count":2,"total_count":8,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}', true));
     $searchResponse->shouldReceive('getBody')
       ->with(true)
-      ->andReturn('{"count":2,"total_count":6,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}');
+      ->andReturn('{"count":2,"total_count":8,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}');
     $searchRequest = m::mock('Guzzle\Http\Message\Request');
     $searchRequest->shouldReceive('setAuth')
       ->with('api-key')
@@ -77,7 +77,7 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     $searchResult = $this->client->execute($searchOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\SearchResult', $searchResult);
     $this->assertEquals(10, $searchResult->count());
-    $this->assertEquals(10, $searchResult->totalCount());
+    $this->assertEquals(12, $searchResult->totalCount());
   }
 
   public function testSearchWithQueryLimitOffset()
@@ -86,7 +86,7 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     $searchResult = $this->client->execute($searchOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\SearchResult', $searchResult);
     $this->assertEquals(2, $searchResult->count());
-    $this->assertEquals(6, $searchResult->totalCount());
+    $this->assertEquals(8, $searchResult->totalCount());
   }
 
 }
