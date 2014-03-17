@@ -99,6 +99,13 @@ $count = $kvListObject->count(); // 5
 $link = $kvListObject->getLink(); // /v0/films?limit=5&afterKey=shawshank_redemption
 ```
 
+## Delete collection
+```php
+use SocalNick\Orchestrate\CollectionDeleteOperation;
+$cDeleteOp = new CollectionDeleteOperation("first_collection");
+$result = $client->execute($cDeleteOp); // true
+```
+
 # Search
 
 ## Default Search
