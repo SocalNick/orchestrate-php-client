@@ -61,14 +61,14 @@ class Client
   public function execute(OperationInterface $op)
   {
     try {
-      if ($op instanceof PutOperationInterface) {
+      if ($op instanceof DeleteOperationInterface) {
+        $request = $this->httpClient->delete($op->getEndpoint());
+      } elseif ($op instanceof PutOperationInterface) {
         $request = $this->httpClient->put(
           $op->getEndpoint(),
           $op->getHeaders(),
           $op->getData()
         );
-      } elseif ($op instanceof DeleteOperationInterface) {
-        $request = $this->httpClient->delete($op->getEndpoint());
       } else {
         $request = $this->httpClient->get($op->getEndpoint());
       }
