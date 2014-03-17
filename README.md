@@ -118,3 +118,35 @@ $searchResult = $client->execute($searchOp);
 $count = $searchResult->count(); // 2
 $total = $searchResult->totalCount(); // 8
 ```
+
+# Events
+
+## Put defaults to now
+```php
+use SocalNick\Orchestrate\EventPutOperation;
+$evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(array("message" => "This is my favorite movie!")));
+$result = $client->execute($evPutOp); // true
+```
+
+## Put with timestamp
+```php
+use SocalNick\Orchestrate\EventPutOperation;
+$evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(array("message" => "This is my favorite movie!")), 1395029140000);
+$result = $client->execute($evPutOp); // true
+```
+
+## Get
+```php
+use SocalNick\Orchestrate\EventFetchOperation;
+$evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment");
+$evObject = $client->execute($evFetchOp);
+$count = $evObject->count(); // 2
+```
+
+## Get with start and end
+```php
+use SocalNick\Orchestrate\EventFetchOperation;
+$evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", 1395029140000, 1395029140001);
+$evObject = $client->execute($evFetchOp);
+$count = $evObject->count(); // 1
+```
