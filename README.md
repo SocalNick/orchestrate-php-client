@@ -54,7 +54,7 @@ $ref = $kvObject->getRef(); // 9c1bc18e60d93848
 ```php
 use SocalNick\Orchestrate\KvFetchOperation;
 $kvFetchOp = new KvFetchOperation("first_collection", "second_key", "741357981fd7b5cb");
-$kvObject = $this->client->execute($kvFetchOp);
+$kvObject = $client->execute($kvFetchOp);
 $ref = $kvObject->getRef(); // 741357981fd7b5cb
 ```
 
@@ -62,21 +62,21 @@ $ref = $kvObject->getRef(); // 741357981fd7b5cb
 ```php
 use SocalNick\Orchestrate\KvDeleteOperation;
 $kvDeleteOp = new KvDeleteOperation("first_collection", "first_key");
-$result = $this->client->execute($kvDeleteOp); // true
+$result = $client->execute($kvDeleteOp); // true
 ```
 
 ## Delete with purge
 ```php
 use SocalNick\Orchestrate\KvDeleteOperation;
 $kvDeleteOp = new KvDeleteOperation("first_collection", "first_key", true);
-$result = $this->client->execute($kvDeleteOp); // true
+$result = $client->execute($kvDeleteOp); // true
 ```
 
 ## List
 ```php
 use SocalNick\Orchestrate\KvListObject;
 $kvListOp = new KvListOperation("films");
-$kvListObject = $this->client->execute($kvListOp);
+$kvListObject = $client->execute($kvListOp);
 $count = $kvListObject->count(); // 10
 $link = $kvListObject->getLink(); // /v0/films?limit=10&afterKey=the_godfather_part_2
 ```
@@ -85,7 +85,7 @@ $link = $kvListObject->getLink(); // /v0/films?limit=10&afterKey=the_godfather_p
 ```php
 use SocalNick\Orchestrate\KvListObject;
 $kvListOp = new KvListOperation("films", 5, 'anchorman');
-$kvListObject = $this->client->execute($kvListOp);
+$kvListObject = $client->execute($kvListOp);
 $count = $kvListObject->count(); // 5
 $link = $kvListObject->getLink(); // /v0/films?limit=5&afterKey=pulp_fiction
 ```
@@ -94,7 +94,27 @@ $link = $kvListObject->getLink(); // /v0/films?limit=5&afterKey=pulp_fiction
 ```php
 use SocalNick\Orchestrate\KvListObject;
 $kvListOp = new KvListOperation("films", 5, null, 'anchorman');
-$kvListObject = $this->client->execute($kvListOp);
+$kvListObject = $client->execute($kvListOp);
 $count = $kvListObject->count(); // 5
 $link = $kvListObject->getLink(); // /v0/films?limit=5&afterKey=shawshank_redemption
+```
+
+# Search
+
+## Default Search
+```php
+use SocalNick\Orchestrate\SearchOperation;
+$searchOp = new SearchOperation("films");
+$searchResult = $client->execute($searchOp);
+$count = $searchResult->count(); // 10
+$total = $searchResult->totalCount(); // 12
+```
+
+## Search with query, limit, and offset
+```php
+use SocalNick\Orchestrate\SearchOperation;
+$searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2);
+$searchResult = $client->execute($searchOp);
+$count = $searchResult->count(); // 2
+$total = $searchResult->totalCount(); // 8
 ```
