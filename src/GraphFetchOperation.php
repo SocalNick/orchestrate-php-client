@@ -26,7 +26,7 @@ class GraphFetchOperation implements OperationInterface
         );
         
         return $this->collection  . '/' . $this->key . 
-            '/relations/' . $this->kind. '/?' . http_build_query($graphParams);
+            '/relations/' . $this->kind. '?' . http_build_query($graphParams);
     }
 
     public function getObjectFromResponse($ref, $value = null, $rawValue = null)
