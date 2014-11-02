@@ -126,10 +126,10 @@ $count = $searchResult->count(); // 10
 $total = $searchResult->totalCount(); // 12
 ```
 
-## Search with query, limit, and offset
+## Search with query, limit, offset and sort (:asc or :desc)
 ```php
 use SocalNick\Orchestrate\SearchOperation;
-$searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2);
+$searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2, 'value.label:asc');
 $searchResult = $client->execute($searchOp);
 $count = $searchResult->count(); // 2
 $total = $searchResult->totalCount(); // 8
@@ -179,10 +179,10 @@ $graphPutOp = new GraphPutOperation("films", "the_godfather_part_2", "sequel", "
 $result = $client->execute($graphPutOp); // true
 ```
 
-## Get
+## Get - limit and offset
 ```php
 use SocalNick\Orchestrate\GraphFetchOperation;
-$graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel");
+$graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel", 100, 0);
 $graphObject = $client->execute($graphFetchOp);
 $count = $graphObject->count(); // 1
 ```
