@@ -9,11 +9,12 @@ class SearchOperation implements OperationInterface
   protected $limit = 10;
   protected $offset = 0;
 
-  public function __construct($collection, $query = '*', $limit = 10, $offset = 0)
+  public function __construct($collection, $query = '*', $limit = 10, $offset = 0, $sort = 'none')
   {
     $this->collection = $collection;
     $this->query = $query;
     $this->limit = $limit;
+    $this->sort = $sort;
     if ($limit > 100) {
       trigger_error(sprintf('Invalid limit: %d. Maximum is 100', $limit));
       $limit = 100;
@@ -24,9 +25,10 @@ class SearchOperation implements OperationInterface
   public function getEndpoint()
   {
     $queryParams = array(
-      'query' => $this->query,
-      'limit' => $this->limit,
+      'query'  => $this->query,
+      'limit'  => $this->limit,
       'offset' => $this->offset,
+      'sort'   => $this->sort,
     );
 
     return $this->collection . '/?' . http_build_query($queryParams);
