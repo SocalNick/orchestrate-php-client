@@ -117,13 +117,14 @@ $count = $searchResult->count(); // 10
 $total = $searchResult->totalCount(); // 12
 ```
 
-## Search with query, limit, and offset
+## Search with query, limit, offset, and sort
 ```php
 use SocalNick\Orchestrate\SearchOperation;
-$searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2);
+$searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2, 'value.Title:asc');
 $searchResult = $client->execute($searchOp);
 $count = $searchResult->count(); // 2
 $total = $searchResult->totalCount(); // 8
+$firstKey = $searchResult->getValue()['results'][0]['path']['key']; // lock_stock_and_two_smoking_barrels
 ```
 
 # Events

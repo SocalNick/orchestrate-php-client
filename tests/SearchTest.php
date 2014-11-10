@@ -48,10 +48,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $searchResponse->shouldReceive('json')
       ->withNoArgs()
-      ->andReturn(json_decode('{"count":2,"total_count":8,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}', true));
+      ->andReturn(json_decode('{"count":2,"total_count":8,"results":[{"path":{"collection":"films","key":"lock_stock_and_two_smoking_barrels","ref":"9113c836a4589e07"}}]}', true));
     $searchResponse->shouldReceive('getBody')
       ->with(true)
-      ->andReturn('{"count":2,"total_count":8,"results":[{"path":{"collection":"films","key":"goodfellas","ref":"1cd244f81857f18a"}}]}');
+      ->andReturn('{"count":2,"total_count":8,"results":[{"path":{"collection":"films","key":"lock_stock_and_two_smoking_barrels","ref":"9113c836a4589e07"}}]}');
     $searchRequest = m::mock('Guzzle\Http\Message\Request');
     $searchRequest->shouldReceive('setAuth')
       ->with('api-key')
@@ -60,7 +60,7 @@ class SearchTest extends \PHPUnit_Framework_TestCase
       ->withNoArgs()
       ->andReturn($searchResponse);
     $httpClient->shouldReceive('get')
-      ->with('films/?query=Genre%3A%2ACrime%2A&limit=2&offset=2')
+      ->with('films/?query=Genre%3A%2ACrime%2A&limit=2&offset=2&sort=value.Title%3Aasc')
       ->andReturn($searchRequest);
 
     $this->client = new Client('api-key', $httpClient);
@@ -80,13 +80,14 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals(12, $searchResult->totalCount());
   }
 
-  public function testSearchWithQueryLimitOffset()
+  public function testSearchWithQueryLimitOffsetSort()
   {
-    $searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2);
+    $searchOp = new SearchOperation("films", "Genre:*Crime*", 2, 2, 'value.Title:asc');
     $searchResult = $this->client->execute($searchOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\SearchResult', $searchResult);
     $this->assertEquals(2, $searchResult->count());
     $this->assertEquals(8, $searchResult->totalCount());
+    $this->assertEquals('9113c836a4589e07', $searchResult->getValue()['results'][0]['path']['ref']);
   }
 
 }
