@@ -69,6 +69,12 @@ class Client
           $op->getHeaders(),
           $op->getData()
         );
+      } elseif ($op instanceof PostOperationInterface) {
+      	$request = $this->httpClient->post(
+          $op->getEndpoint(),
+          $op->getHeaders(),
+          $op->getData()
+        );
       } else {
         $request = $this->httpClient->get($op->getEndpoint());
       }
