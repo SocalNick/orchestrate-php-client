@@ -39,7 +39,7 @@ class EventFetchOperation implements OperationInterface
     return $queryParams;
   }
 
-  public function getObjectFromResponse($ref, $value = null, $rawValue = null)
+  public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
     return new EventObject($this->collection, $this->key, $this->type, $value, $rawValue);
   }

@@ -44,7 +44,7 @@ $kvObject = $client->execute($kvPutOp); // null
 
 ## Post (auto-generated key)
 ```php
-use SocalNick\Orchestrate\KvPutOperation;
+use SocalNick\Orchestrate\KvPostOperation;
 $kvPostOp = new KvPostOperation("first_collection", json_encode(array("name" => "Nick")));
 $kvObject = $client->execute($kvPostOp);
 $ref = $kvObject->getRef(); // 741357981fd7b5cb

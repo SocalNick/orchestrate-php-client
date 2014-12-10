@@ -24,6 +24,9 @@ class GraphTest extends \PHPUnit_Framework_TestCase
     $firstPutResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $firstPutResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $firstPutResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -51,6 +54,9 @@ class GraphTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $secondPutResponse->shouldReceive('hasHeader')
       ->with('Link')
+      ->andReturn(false);
+    $secondPutResponse->shouldReceive('hasHeader')
+      ->with('Location')
       ->andReturn(false);
     $secondPutResponse->shouldReceive('json')
       ->withNoArgs()
@@ -80,6 +86,9 @@ class GraphTest extends \PHPUnit_Framework_TestCase
     $getResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $getResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $getResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count": 1,"results": [{"path": {"collection": "films","key": "the_godfather_part_3","ref": "4551215def111439"},"value": {"Title": "The Godfather: Part III","Year": 1990}}]}', true));
@@ -103,6 +112,9 @@ class GraphTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $firstDeleteResponse->shouldReceive('hasHeader')
       ->with('Link')
+      ->andReturn(false);
+    $firstDeleteResponse->shouldReceive('hasHeader')
+      ->with('Location')
       ->andReturn(false);
     $firstDeleteResponse->shouldReceive('json')
       ->withNoArgs()
@@ -128,6 +140,9 @@ class GraphTest extends \PHPUnit_Framework_TestCase
     $secondDeleteResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $secondDeleteResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $secondDeleteResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -152,6 +167,9 @@ class GraphTest extends \PHPUnit_Framework_TestCase
     $getResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $getResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $getResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count": 0,"results": []}', true));
@@ -175,6 +193,9 @@ class GraphTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $getResponse->shouldReceive('hasHeader')
       ->with('Link')
+      ->andReturn(false);
+    $getResponse->shouldReceive('hasHeader')
+      ->with('Location')
       ->andReturn(false);
     $getResponse->shouldReceive('json')
       ->withNoArgs()

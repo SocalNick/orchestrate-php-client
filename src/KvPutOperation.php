@@ -34,7 +34,7 @@ class KvPutOperation extends KvFetchOperation implements PutOperationInterface
     return $this->data;
   }
 
-  public function getObjectFromResponse($ref, $value = null, $rawValue = null)
+  public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
     return new KvObject($this->collection, $this->key, $ref);
   }

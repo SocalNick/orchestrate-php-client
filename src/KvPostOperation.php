@@ -2,28 +2,13 @@
 
 namespace SocalNick\Orchestrate;
 
-class KvPostOperation extends KvFetchOperation implements PostOperationInterface
+class KvPostOperation extends KvPutOperation implements PostOperationInterface
 {
-  protected $data;
-
   public function __construct($collection, $data)
   {
     $this->collection = $collection;
     $this->data = $data;
-  }
-
-  public function getHeaders()
-  {
-    $headers = array(
-      'Content-Type' => 'application/json',
-    );
-
-    return $headers;
-  }
-
-  public function getData()
-  {
-    return $this->data;
+    $this->conditional = array();
   }
 
   public function getEndpoint()
@@ -31,8 +16,9 @@ class KvPostOperation extends KvFetchOperation implements PostOperationInterface
     return $this->collection;
   }
  
-  public function getObjectFromResponse($ref, $value = null, $rawValue = null)
+  public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
-    return new KvObject($this->collection, $value['path']['key'], $ref, $value);
+    $key = preg_replace('%/[^/]+/[^/]+/([^/]+)/[^/]+/[^/]+%s', '$1', $location);
+    return new KvObject($this->collection, $key, $ref, $value);
   }
 }

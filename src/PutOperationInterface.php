@@ -2,8 +2,6 @@
 
 namespace SocalNick\Orchestrate;
 
-interface PutOperationInterface extends OperationInterface
+interface PutOperationInterface extends UpsertOperationInterface
 {
-  public function getData();
-  public function getHeaders();
 }

@@ -10,7 +10,7 @@ class GraphDeleteOperation extends GraphPutOperation implements DeleteOperationI
     return parent::getEndpoint() . '?purge=true';
   }
 
-  public function getObjectFromResponse($ref, $value = null, $rawValue = null)
+  public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
     return true;
   }
