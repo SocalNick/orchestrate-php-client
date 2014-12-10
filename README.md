@@ -74,7 +74,7 @@ $result = $client->execute($kvDeleteOp); // true
 
 ## List
 ```php
-use SocalNick\Orchestrate\KvListObject;
+use SocalNick\Orchestrate\KvListOperation;
 $kvListOp = new KvListOperation("films");
 $kvListObject = $client->execute($kvListOp);
 $count = $kvListObject->count(); // 10
@@ -83,7 +83,7 @@ $link = $kvListObject->getLink(); // /v0/films?limit=10&afterKey=the_godfather_p
 
 ## List with inclusive start key
 ```php
-use SocalNick\Orchestrate\KvListObject;
+use SocalNick\Orchestrate\KvListOperation;
 $kvListOp = new KvListOperation("films", 5, 'anchorman');
 $kvListObject = $client->execute($kvListOp);
 $count = $kvListObject->count(); // 5
@@ -92,7 +92,7 @@ $link = $kvListObject->getLink(); // /v0/films?limit=5&afterKey=pulp_fiction
 
 ## List with exclusive after key
 ```php
-use SocalNick\Orchestrate\KvListObject;
+use SocalNick\Orchestrate\KvListOperation;
 $kvListOp = new KvListOperation("films", 5, null, 'anchorman');
 $kvListObject = $client->execute($kvListOp);
 $count = $kvListObject->count(); // 5
