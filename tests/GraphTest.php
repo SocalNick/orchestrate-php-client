@@ -214,7 +214,7 @@ class GraphTest extends \PHPUnit_Framework_TestCase
 
   public function testGet()
   {
-      $graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel");
+    $graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel");
     $graphObject = $this->client->execute($graphFetchOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\GraphObject', $graphObject);
     $this->assertEquals(1, $graphObject->count());
