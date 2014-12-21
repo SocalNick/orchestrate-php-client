@@ -1,11 +1,11 @@
 {
-    "name": "socalnick/orchestrate-php-client",
+    "name": "sportarchive/orchestrate-php-client",
     "description": "A PHP client for Orchestrate.io",
     "license": "BSD 3-Clause",
     "authors": [
         {
-            "name": "Nicholas Calugar",
-            "email": "njcalugar@gmail.com"
+            "name": "Nicolas Menciere",
+            "email": "nmenciere@sportarchive.tv"
         }
     ],
     "require": {
