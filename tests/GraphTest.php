@@ -94,7 +94,7 @@ class GraphTest extends \PHPUnit_Framework_TestCase
       ->withNoArgs()
       ->andReturn($getResponse);
     $httpClient->shouldReceive('get')
-      ->with('films/the_godfather/relations/sequel/sequel')
+      ->with('films/the_godfather/relations/sequel/sequel?limit=10&offset=0')
       ->andReturn($getRequest);
 
     $firstDeleteResponse = m::mock('Guzzle\Http\Message\Response');
@@ -166,7 +166,7 @@ class GraphTest extends \PHPUnit_Framework_TestCase
       ->withNoArgs()
       ->andReturn($getResponse);
     $httpClient->shouldReceive('get')
-      ->with('films/the_godfather/relations/sequel')
+      ->with('films/the_godfather/relations/sequel?limit=10&offset=0')
       ->andReturn($getRequest);
 
     $getResponse = m::mock('Guzzle\Http\Message\Response');
@@ -190,7 +190,7 @@ class GraphTest extends \PHPUnit_Framework_TestCase
       ->withNoArgs()
       ->andReturn($getResponse);
     $httpClient->shouldReceive('get')
-      ->with('films/the_godfather_part_2/relations/sequel')
+      ->with('films/the_godfather_part_2/relations/sequel?limit=10&offset=0')
       ->andReturn($getRequest);
 
     $this->client = new Client('api-key', $httpClient);
@@ -214,7 +214,7 @@ class GraphTest extends \PHPUnit_Framework_TestCase
 
   public function testGet()
   {
-    $graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel");
+      $graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel");
     $graphObject = $this->client->execute($graphFetchOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\GraphObject', $graphObject);
     $this->assertEquals(1, $graphObject->count());
