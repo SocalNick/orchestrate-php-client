@@ -7,17 +7,28 @@ class GraphFetchOperation implements OperationInterface
   protected $collection;
   protected $key;
   protected $kind;
+  protected $limit;
+  protected $offset;
 
-  public function __construct($collection, $key, $kind)
+  public function __construct($collection, $key, $kind, 
+      $limit = 10, $offset = 0)
   {
     $this->collection = $collection;
     $this->key = $key;
     $this->kind = $kind;
+    $this->limit = $limit;
+    $this->offset = $offset;
   }
 
   public function getEndpoint()
   {
-    return $this->collection  . '/' . $this->key . '/relations/' . $this->kind;
+    $graphParams = array(
+        'limit'  => $this->limit,
+        'offset' => $this->offset,
+    );
+
+    return $this->collection  . '/' . $this->key . 
+        '/relations/' . $this->kind. '?' . http_build_query($graphParams);
   }
 
   public function getObjectFromResponse($ref, $value = null, $rawValue = null)
