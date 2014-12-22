@@ -179,6 +179,16 @@ $graphObject = $client->execute($graphFetchOp);
 $count = $graphObject->count(); // 1
 ```
 
+## Get with limit and offset
+```php
+use SocalNick\Orchestrate\GraphFetchOperation;
+$graphFetchOp = new GraphFetchOperation("directors", "francis_ford_coppola", "films_directed", 1, 1);
+$graphObject = $client->execute($graphFetchOp);
+$count = $graphObject->count(); // 1
+$next = $graphObject->getNext(); // /v0/directors/francis_ford_coppola/relations/films_directed?limit=1&offset=2
+$prev = $graphObject->getPrev(); // /v0/directors/francis_ford_coppola/relations/films_directed?limit=1&offset=0
+```
+
 ## Delete
 ```php
 use SocalNick\Orchestrate\GraphDeleteOperation;
