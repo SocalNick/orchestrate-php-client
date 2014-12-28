@@ -6,6 +6,7 @@ use SocalNick\Orchestrate\Client;
 use SocalNick\Orchestrate\KvDeleteOperation;
 use SocalNick\Orchestrate\KvFetchOperation;
 use SocalNick\Orchestrate\KvListOperation;
+use SocalNick\Orchestrate\KvPostOperation;
 use SocalNick\Orchestrate\KvPutOperation;
 use SocalNick\Orchestrate\KvObject;
 use SocalNick\Orchestrate\KvListObject;
@@ -26,6 +27,11 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $secondKeyResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('741357981fd7b5cb');
+    $secondKeyResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(true);
+    $secondKeyResponse->shouldReceive('getLocation')
+      ->andReturn('/v0/first_collection/second_key/refs/741357981fd7b5cb');
     $secondKeyResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -50,6 +56,11 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $secondKeyMatchResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('0d1f15ab524a5c5a');
+    $secondKeyMatchResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(true);
+    $secondKeyMatchResponse->shouldReceive('getLocation')
+      ->andReturn('/v0/first_collection/second_key/refs/0d1f15ab524a5c5a');
     $secondKeyMatchResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -84,6 +95,35 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->with('first_collection/second_key', array('Content-Type'=>'application/json', 'If-None-Match'=>'"*"'), '{"name":"Bill"}')
       ->andReturn($secondKeyNoneMatchRequest);
 
+    $postResponse = m::mock('Guzzle\Http\Message\Response');
+    $postResponse->shouldReceive('hasHeader')
+      ->with('ETag')
+      ->andReturn(true);
+    $postResponse->shouldReceive('getHeader')
+      ->with('ETag')
+      ->andReturn('6966021b255bd0f7');
+    $postResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(true);
+    $postResponse->shouldReceive('getLocation')
+      ->andReturn('/v0/first_collection/0727de1451204020/refs/6966021b255bd0f7');
+    $postResponse->shouldReceive('json')
+      ->withNoArgs()
+      ->andReturn(array());
+    $postResponse->shouldReceive('getBody')
+      ->with(true)
+      ->andReturn('');
+    $postRequest = m::mock('Guzzle\Http\Message\Request');
+    $postRequest->shouldReceive('setAuth')
+      ->with('api-key')
+      ->andReturn(m::self());
+    $postRequest->shouldReceive('send')
+      ->withNoArgs()
+      ->andReturn($postResponse);
+    $httpClient->shouldReceive('post')
+      ->with('first_collection', array('Content-Type'=>'application/json',), '{"name":"Adam"}')
+      ->andReturn($postRequest);
+
     $missingRequest = m::mock('Guzzle\Http\Message\Request');
     $missingRequest->shouldReceive('setAuth')
       ->with('api-key')
@@ -102,6 +142,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $godfatherResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('9c1bc18e60d93848');
+    $godfatherResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $godfatherResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"Title": "The Godfather","Released": "24 Mar 1972"}', true));
@@ -126,6 +169,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $previousRefResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('741357981fd7b5cb');
+    $previousRefResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $previousRefResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"name":"John"}', true));
@@ -150,6 +196,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $firstDeleteResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $firstDeleteResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $firstDeleteResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -173,6 +222,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $secondDeleteResponse->shouldReceive('hasHeader')
       ->with('Link')
+      ->andReturn(false);
+    $secondDeleteResponse->shouldReceive('hasHeader')
+      ->with('Location')
       ->andReturn(false);
     $secondDeleteResponse->shouldReceive('json')
       ->withNoArgs()
@@ -201,6 +253,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $defaultListResponse->shouldReceive('getHeader')
       ->with('Link')
       ->andReturn('</v0/films?limit=10&afterKey=the_godfather_part_2>; rel="next"');
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $defaultListResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count":10,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}', true));
@@ -228,6 +283,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $defaultListResponse->shouldReceive('getHeader')
       ->with('Link')
       ->andReturn('</v0/films?limit=5&afterKey=pulp_fiction>; rel="next"');
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $defaultListResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count":5,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}', true));
@@ -255,6 +313,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $defaultListResponse->shouldReceive('getHeader')
       ->with('Link')
       ->andReturn('</v0/films?limit=5&afterKey=shawshank_redemption>; rel="next"');
+    $defaultListResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $defaultListResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count":5,"results":[{"path":{"collection":"films","key":"Pi","ref":"eb970a6a59d9c987"}}]}', true));
@@ -301,6 +362,14 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $kvPutOp = new KvPutOperation("first_collection", "second_key", json_encode(array("name" => "Bill")), array('if-none-match' => '*'));
     $kvObject = $this->client->execute($kvPutOp);
     $this->assertNull($kvObject);
+  }
+
+  public function testPost()
+  {
+    $kvPostOp = new KvPostOperation("first_collection", json_encode(array("name" => "Adam")));
+    $kvObject = $this->client->execute($kvPostOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+    $this->assertRegExp('/[a-f0-9]{16}/', $kvObject->getKey());
   }
 
   public function testKeyDoesNotExist404()

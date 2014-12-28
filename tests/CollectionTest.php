@@ -23,6 +23,11 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     $firstKeyResponse->shouldReceive('getHeader')
       ->with('ETag')
       ->andReturn('7b767e7cc8bdd6cb');
+    $firstKeyResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(true);
+    $firstKeyResponse->shouldReceive('getLocation')
+      ->andReturn('/v0/first_collection/first_key/refs/7b767e7cc8bdd6cb');
     $firstKeyResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -46,6 +51,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $deleteResponse->shouldReceive('hasHeader')
       ->with('Link')
+      ->andReturn(false);
+    $deleteResponse->shouldReceive('hasHeader')
+      ->with('Location')
       ->andReturn(false);
     $deleteResponse->shouldReceive('json')
       ->withNoArgs()

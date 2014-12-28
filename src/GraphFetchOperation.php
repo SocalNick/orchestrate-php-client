@@ -29,7 +29,7 @@ class GraphFetchOperation implements OperationInterface
     return $this->collection  . '/' . $this->key . '/relations/' . $this->kind. '?' . http_build_query($graphParams);
   }
 
-  public function getObjectFromResponse($ref, $value = null, $rawValue = null)
+  public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
     return new GraphObject($this->collection, $this->key, $this->kind, $value, $rawValue);
   }

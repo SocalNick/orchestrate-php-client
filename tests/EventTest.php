@@ -29,6 +29,11 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $defaultPutResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $defaultPutResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(true);
+    $defaultPutResponse->shouldReceive('getLocation')
+      ->andReturn('/v0/films/pulp_fiction/events/comment/1419269205959/515644478292779008');
     $defaultPutResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -57,6 +62,11 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $timestampPutResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $timestampPutResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(true);
+    $timestampPutResponse->shouldReceive('getLocation')
+      ->andReturn('/v0/films/pulp_fiction/events/comment/1419269205000/515644482101207040');
     $timestampPutResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(array());
@@ -85,6 +95,9 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $defaultGetResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $defaultGetResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $defaultGetResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count": 3,"results": [{"value": {"message": "This is my favorite movie!"},"timestamp": 1394330291000},{"value": {"message": "This is my favorite movie!"},"timestamp": 1394330191903},{"value": {"message": "This is my favorite movie!"},"timestamp": 1394330128930}]}', true));
@@ -108,6 +121,9 @@ class EventTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $startEndGetResponse->shouldReceive('hasHeader')
       ->with('Link')
+      ->andReturn(false);
+    $startEndGetResponse->shouldReceive('hasHeader')
+      ->with('Location')
       ->andReturn(false);
     $startEndGetResponse->shouldReceive('json')
       ->withNoArgs()

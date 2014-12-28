@@ -22,6 +22,9 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     $defaultSearchResponse->shouldReceive('hasHeader')
       ->with('Link')
       ->andReturn(false);
+    $defaultSearchResponse->shouldReceive('hasHeader')
+      ->with('Location')
+      ->andReturn(false);
     $defaultSearchResponse->shouldReceive('json')
       ->withNoArgs()
       ->andReturn(json_decode('{"count":10,"total_count":12,"results": [{"path": {"collection": "films","key": "shawshank_redemption","ref": "6328a27142985690"}}]}', true));
@@ -45,6 +48,9 @@ class SearchTest extends \PHPUnit_Framework_TestCase
       ->andReturn(false);
     $searchResponse->shouldReceive('hasHeader')
       ->with('Link')
+      ->andReturn(false);
+    $searchResponse->shouldReceive('hasHeader')
+      ->with('Location')
       ->andReturn(false);
     $searchResponse->shouldReceive('json')
       ->withNoArgs()
