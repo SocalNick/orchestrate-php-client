@@ -67,7 +67,7 @@ class KvTest extends \PHPUnit_Framework_TestCase
 
   public function testPost()
   {
-    $kvPostOp = new KvPostOperation("first_collection", json_encode(array("name" => "Adam")));
+    $kvPostOp = new KvPostOperation(self::$collection, json_encode(array("name" => "Adam")));
     $kvObject = self::$client->execute($kvPostOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertRegExp('/[a-f0-9]{16}/', $kvObject->getKey());
