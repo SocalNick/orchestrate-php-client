@@ -10,8 +10,7 @@ class GraphFetchOperation implements OperationInterface
   protected $limit;
   protected $offset;
 
-  public function __construct($collection, $key, $kind, 
-      $limit = 10, $offset = 0)
+  public function __construct($collection, $key, $kind, $limit = 10, $offset = 0)
   {
     $this->collection = $collection;
     $this->key = $key;
@@ -27,11 +26,10 @@ class GraphFetchOperation implements OperationInterface
         'offset' => $this->offset,
     );
 
-    return $this->collection  . '/' . $this->key . 
-        '/relations/' . $this->kind. '?' . http_build_query($graphParams);
+    return $this->collection  . '/' . $this->key . '/relations/' . $this->kind. '?' . http_build_query($graphParams);
   }
 
-  public function getObjectFromResponse($ref, $value = null, $rawValue = null)
+  public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
     return new GraphObject($this->collection, $this->key, $this->kind, $value, $rawValue);
   }

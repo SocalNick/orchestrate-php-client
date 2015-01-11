@@ -42,6 +42,15 @@ $kvPutOp = new KvPutOperation("first_collection", "second_key", json_encode(arra
 $kvObject = $client->execute($kvPutOp); // null
 ```
 
+## Post (auto-generated key)
+```php
+use SocalNick\Orchestrate\KvPostOperation;
+$kvPostOp = new KvPostOperation("first_collection", json_encode(array("name" => "Nick")));
+$kvObject = $client->execute($kvPostOp);
+$ref = $kvObject->getRef(); // 741357981fd7b5cb
+$key = $kvObject->getKey(); // 05fb279bc820dd05
+```
+
 ## Get
 ```php
 use SocalNick\Orchestrate\KvFetchOperation;
@@ -177,6 +186,16 @@ use SocalNick\Orchestrate\GraphFetchOperation;
 $graphFetchOp = new GraphFetchOperation("films", "the_godfather", "sequel/sequel");
 $graphObject = $client->execute($graphFetchOp);
 $count = $graphObject->count(); // 1
+```
+
+## Get with limit and offset
+```php
+use SocalNick\Orchestrate\GraphFetchOperation;
+$graphFetchOp = new GraphFetchOperation("directors", "francis_ford_coppola", "films_directed", 1, 1);
+$graphObject = $client->execute($graphFetchOp);
+$count = $graphObject->count(); // 1
+$next = $graphObject->getNext(); // /v0/directors/francis_ford_coppola/relations/films_directed?limit=1&offset=2
+$prev = $graphObject->getPrev(); // /v0/directors/francis_ford_coppola/relations/films_directed?limit=1&offset=0
 ```
 
 ## Delete

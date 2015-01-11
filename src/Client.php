@@ -63,6 +63,12 @@ class Client
     try {
       if ($op instanceof DeleteOperationInterface) {
         $request = $this->httpClient->delete($op->getEndpoint());
+      } elseif ($op instanceof PostOperationInterface) {
+        $request = $this->httpClient->post(
+          $op->getEndpoint(),
+          $op->getHeaders(),
+          $op->getData()
+        );
       } elseif ($op instanceof PutOperationInterface) {
         $request = $this->httpClient->put(
           $op->getEndpoint(),
@@ -82,6 +88,8 @@ class Client
     }
 
     $refLink = null;
+    $location = null;
+
     if ($response->hasHeader('ETag')) {
       $refLink = str_replace('"', '', (string) $response->getHeader('ETag'));
     } elseif ($response->hasHeader('Link')) {
@@ -91,10 +99,14 @@ class Client
         (string) $response->getHeader('Link')
       );
     }
+
+    if ($response->hasHeader('Location')) {
+      $location = $response->getLocation();
+    }
     $value = $response->json();
     $rawValue = $response->getBody(true);
 
-    return $op->getObjectFromResponse($refLink, $value, $rawValue);
+    return $op->getObjectFromResponse($refLink, $location, $value, $rawValue);
   }
 
 }

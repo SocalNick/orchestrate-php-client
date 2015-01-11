@@ -35,7 +35,7 @@ class SearchOperation implements OperationInterface
     return $this->collection . '/?' . http_build_query($queryParams);
   }
 
-  public function getObjectFromResponse($link = null, $value = null, $rawValue = null)
+  public function getObjectFromResponse($link = null, $location = null, $value = null, $rawValue = null)
   {
     return new SearchResult($this->collection, $value, $rawValue);
   }

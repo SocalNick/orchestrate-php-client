@@ -33,7 +33,7 @@ class KvListOperation implements OperationInterface
     return $this->collection . '?' . http_build_query($queryParams);
   }
 
-  public function getObjectFromResponse($link, $value = null, $rawValue = null)
+  public function getObjectFromResponse($link, $location = null, $value = null, $rawValue = null)
   {
     return new KvListObject($this->collection, $link, $value, $rawValue);
   }
