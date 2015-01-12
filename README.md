@@ -3,6 +3,7 @@ Orchestrate PHP Client
 A PHP client for [Orchestrate.io](http://orchestrate.io).
 
 [![Build Status](https://travis-ci.org/SocalNick/orchestrate-php-client.png?branch=master)](https://travis-ci.org/SocalNick/orchestrate-php-client)
+[![Latest Stable Version](https://poser.pugx.org/socalnick/orchestrate-php-client/v/stable.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client) [![Total Downloads](https://poser.pugx.org/socalnick/orchestrate-php-client/downloads.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client) [![Latest Unstable Version](https://poser.pugx.org/socalnick/orchestrate-php-client/v/unstable.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client) [![License](https://poser.pugx.org/socalnick/orchestrate-php-client/license.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client)
 
 # Installation
 
