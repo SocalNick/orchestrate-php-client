@@ -69,6 +69,12 @@ class Client
           $op->getHeaders(),
           $op->getData()
         );
+      } elseif ($op instanceof PatchOperationInterface) {
+        $request = $this->httpClient->patch(
+          $op->getEndpoint(),
+          $op->getHeaders(),
+          $op->getData()
+        );
       } elseif ($op instanceof PutOperationInterface) {
         $request = $this->httpClient->put(
           $op->getEndpoint(),

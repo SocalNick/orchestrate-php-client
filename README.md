@@ -51,6 +51,21 @@ $ref = $kvObject->getRef(); // 741357981fd7b5cb
 $key = $kvObject->getKey(); // 05fb279bc820dd05
 ```
 
+## Patch (partial update - operations)
+```php
+use SocalNick\Orchestrate\KvPatchOperationsOperation;
+$kvPatchOperationsOp = new KvPatchOperationsOperation('first_collection', 'third_key');
+$kvPatchOperationsOp
+  ->add('birth_place.city', 'New York')
+  ->remove('birth_place.country')
+  ->replace('birth_place.state', 'New York')
+  ->copy('full_name', 'name')
+  ->test('age', 28)
+  ->inc('age', 1)
+  ->inc('years_until_death', -1);
+$result = $client->execute($kvPatchOperationsOp);
+```
+
 ## Get
 ```php
 use SocalNick\Orchestrate\KvFetchOperation;
