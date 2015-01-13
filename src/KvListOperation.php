@@ -8,8 +8,10 @@ class KvListOperation implements OperationInterface
   protected $limit = 10;
   protected $startKey;
   protected $afterKey;
+  protected $beforeKey;
+  protected $endKey;
 
-  public function __construct($collection, $limit = 10, $startKey = null, $afterKey = null)
+  public function __construct($collection, $limit = 10, $startKey = null, $afterKey = null, $beforeKey = null, $endKey = null)
   {
     $this->collection = $collection;
     $this->limit = $limit;
@@ -17,8 +19,10 @@ class KvListOperation implements OperationInterface
       trigger_error(sprintf('Invalid limit: %d. Maximum is 100', $limit));
       $limit = 100;
     }
-    $this->startKey = $startKey;
-    $this->afterKey = $afterKey;
+    $this->startKey  = $startKey;
+    $this->afterKey  = $afterKey;
+    $this->beforeKey = $beforeKey;
+    $this->endKey    = $endKey;
   }
 
   public function getEndpoint()
@@ -30,6 +34,12 @@ class KvListOperation implements OperationInterface
       $queryParams['afterKey'] = $this->afterKey;
     }
 
+    if ($this->beforeKey) {
+      $queryParams['beforeKey'] = $this->beforeKey;
+    } elseif ($this->endKey) {
+      $queryParams['endKey'] = $this->endKey;
+    }
+    
     return $this->collection . '?' . http_build_query($queryParams);
   }
 

@@ -141,7 +141,7 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $kvListObject = self::$client->execute($kvListOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
     $this->assertEquals(5, $kvListObject->count());
-    $this->assertEquals('/v0/films?limit=5&afterKey=pulp_fiction', $kvListObject->getLink());
+    $this->assertEquals('/v0/films?limit=5&startKey=pulp_fiction', $kvListObject->getLink());
   }
 
   public function testListExclusiveAfterKey()
@@ -153,6 +153,24 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals('/v0/films?limit=5&afterKey=shawshank_redemption', $kvListObject->getLink());
   }
 
+  public function testListExclusiveBeforeKey()
+  {
+    $kvListOp = new KvListOperation("films", 5, null, 'anchorman');
+    $kvListObject = self::$client->execute($kvListOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
+    $this->assertEquals(5, $kvListObject->count());
+    $this->assertEquals('/v0/films?limit=5&beforeKey=shawshank_redemption', $kvListObject->getLink());
+  }
+  
+  public function testListExclusiveEndKey()
+  {
+    $kvListOp = new KvListOperation("films", 5, null, 'anchorman');
+    $kvListObject = self::$client->execute($kvListOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
+    $this->assertEquals(5, $kvListObject->count());
+    $this->assertEquals('/v0/films?limit=5&endKey=pulp_fiction', $kvListObject->getLink());
+  }
+  
   public function testPatchOperations()
   {
     $key = uniqid();
