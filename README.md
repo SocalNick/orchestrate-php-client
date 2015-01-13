@@ -3,6 +3,7 @@ Orchestrate PHP Client
 A PHP client for [Orchestrate.io](http://orchestrate.io).
 
 [![Build Status](https://travis-ci.org/SocalNick/orchestrate-php-client.png?branch=master)](https://travis-ci.org/SocalNick/orchestrate-php-client)
+[![Latest Stable Version](https://poser.pugx.org/socalnick/orchestrate-php-client/v/stable.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client) [![Total Downloads](https://poser.pugx.org/socalnick/orchestrate-php-client/downloads.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client) [![Latest Unstable Version](https://poser.pugx.org/socalnick/orchestrate-php-client/v/unstable.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client) [![License](https://poser.pugx.org/socalnick/orchestrate-php-client/license.svg)](https://packagist.org/packages/socalnick/orchestrate-php-client)
 
 # Installation
 
@@ -49,6 +50,21 @@ $kvPostOp = new KvPostOperation("first_collection", json_encode(array("name" => 
 $kvObject = $client->execute($kvPostOp);
 $ref = $kvObject->getRef(); // 741357981fd7b5cb
 $key = $kvObject->getKey(); // 05fb279bc820dd05
+```
+
+## Patch (partial update - operations)
+```php
+use SocalNick\Orchestrate\KvPatchOperationsOperation;
+$kvPatchOperationsOp = new KvPatchOperationsOperation('first_collection', 'third_key');
+$kvPatchOperationsOp
+  ->add('birth_place.city', 'New York')
+  ->remove('birth_place.country')
+  ->replace('birth_place.state', 'New York')
+  ->copy('full_name', 'name')
+  ->test('age', 28)
+  ->inc('age', 1)
+  ->inc('years_until_death', -1);
+$result = $client->execute($kvPatchOperationsOp);
 ```
 
 ## Get

@@ -7,6 +7,7 @@ use SocalNick\Orchestrate\CollectionDeleteOperation;
 use SocalNick\Orchestrate\KvDeleteOperation;
 use SocalNick\Orchestrate\KvFetchOperation;
 use SocalNick\Orchestrate\KvListOperation;
+use SocalNick\Orchestrate\KvPatchOperationsOperation;
 use SocalNick\Orchestrate\KvPostOperation;
 use SocalNick\Orchestrate\KvPutOperation;
 use SocalNick\Orchestrate\KvObject;
@@ -67,7 +68,7 @@ class KvTest extends \PHPUnit_Framework_TestCase
 
   public function testPost()
   {
-    $kvPostOp = new KvPostOperation("first_collection", json_encode(array("name" => "Adam")));
+    $kvPostOp = new KvPostOperation(self::$collection, json_encode(array("name" => "Adam")));
     $kvObject = self::$client->execute($kvPostOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertRegExp('/[a-f0-9]{16}/', $kvObject->getKey());
@@ -150,5 +151,46 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $this->assertInstanceOf('SocalNick\Orchestrate\KvListObject', $kvListObject);
     $this->assertEquals(5, $kvListObject->count());
     $this->assertEquals('/v0/films?limit=5&afterKey=shawshank_redemption', $kvListObject->getLink());
+  }
+
+  public function testPatchOperations()
+  {
+    $key = uniqid();
+    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array(
+      "first_name" => "John",
+      "full_name" => "John Foster",
+      "age" => 28,
+      "years_until_death" => 40,
+      "birth_place" => array(
+        "state" => "California",
+        "country" => "USA",
+      ),
+    )));
+    $originalKvObject = self::$client->execute($originalKvPutOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $originalKvObject);
+
+    $kvPatchOperationsOp = new KvPatchOperationsOperation(self::$collection, $key);
+    $kvPatchOperationsOp
+      ->add('birth_place.city', 'New York')
+      ->remove('birth_place.country')
+      ->replace('birth_place.state', 'New York')
+      /* ->move('first_name', 'deprecated.first_name') */
+      ->copy('full_name', 'name')
+      ->test('age', 28)
+      ->inc('age', 1)
+      ->inc('years_until_death', -1);
+    $result = self::$client->execute($kvPatchOperationsOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $result);
+
+    $kvFetchOp = new KvFetchOperation(self::$collection, $key);
+    $kvObject = self::$client->execute($kvFetchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+    $value = $kvObject->getValue();
+    $this->assertEquals('New York', $value['birth_place']['city']);
+    $this->assertArrayNotHasKey('country', $value['birth_place']);
+    $this->assertEquals('New York', $value['birth_place']['state']);
+    $this->assertEquals('John Foster', $value['name']);
+    $this->assertEquals(29, $value['age']);
+    $this->assertEquals(39, $value['years_until_death']);
   }
 }
