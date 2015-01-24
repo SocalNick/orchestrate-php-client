@@ -7,6 +7,7 @@ use SocalNick\Orchestrate\CollectionDeleteOperation;
 use SocalNick\Orchestrate\KvDeleteOperation;
 use SocalNick\Orchestrate\KvFetchOperation;
 use SocalNick\Orchestrate\KvListOperation;
+use SocalNick\Orchestrate\KvPatchMergeOperation;
 use SocalNick\Orchestrate\KvPatchOperationsOperation;
 use SocalNick\Orchestrate\KvPostOperation;
 use SocalNick\Orchestrate\KvPutOperation;
@@ -180,6 +181,51 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->inc('age', 1)
       ->inc('years_until_death', -1);
     $result = self::$client->execute($kvPatchOperationsOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $result);
+
+    $kvFetchOp = new KvFetchOperation(self::$collection, $key);
+    $kvObject = self::$client->execute($kvFetchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
+    $value = $kvObject->getValue();
+    $this->assertEquals('New York', $value['birth_place']['city']);
+    $this->assertArrayNotHasKey('country', $value['birth_place']);
+    $this->assertEquals('New York', $value['birth_place']['state']);
+    $this->assertEquals('John Foster', $value['name']);
+    $this->assertEquals(29, $value['age']);
+    $this->assertEquals(39, $value['years_until_death']);
+  }
+
+  public function testPatchMerge()
+  {
+    $key = uniqid();
+    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode([
+      "first_name" => "John",
+      "full_name" => "John Foster",
+      "age" => 28,
+      "years_until_death" => 40,
+      "birth_place" => [
+        "state" => "California",
+        "country" => "USA",
+      ],
+    ]));
+    $originalKvObject = self::$client->execute($originalKvPutOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $originalKvObject);
+
+    $partial = [
+      'birth_place' => [
+        'city' => 'New York',
+        'country' => null,
+        'state' => 'New York',
+      ],
+      'first_name' => null,
+      'deprecated_first_name' => 'John',
+      'name' => 'John Foster',
+      'age' => 29,
+      'years_until_death' => 39,
+    ];
+
+    $kvPatchMergeOp = new KvPatchMergeOperation(self::$collection, $key, json_encode($partial));
+    $result = self::$client->execute($kvPatchMergeOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $result);
 
     $kvFetchOp = new KvFetchOperation(self::$collection, $key);
