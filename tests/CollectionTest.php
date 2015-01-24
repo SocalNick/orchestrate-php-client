@@ -20,7 +20,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
   public function testPutWithoutCollectionCreatesCollection()
   {
-    $kvPutOp = new KvPutOperation(self::$collection, uniqid(), json_encode(array("name" => "Nick")));
+    $kvPutOp = new KvPutOperation(self::$collection, uniqid(), json_encode(["name" => "Nick"]));
     $kvObject = self::$client->execute($kvPutOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertEquals('7b767e7cc8bdd6cb', $kvObject->getRef());

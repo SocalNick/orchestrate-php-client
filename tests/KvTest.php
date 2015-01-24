@@ -23,7 +23,7 @@ class KvTest extends \PHPUnit_Framework_TestCase
     self::$collection = uniqid('collection-');
     self::$client = new Client(getenv('ORCHESTRATE_API_KEY'));
 
-    $kvPutOp = new KvPutOperation(self::$collection, uniqid(), json_encode(array("name" => "Nick")));
+    $kvPutOp = new KvPutOperation(self::$collection, uniqid(), json_encode(["name" => "Nick"]));
     $kvObject = self::$client->execute($kvPutOp);
   }
 
@@ -36,7 +36,7 @@ class KvTest extends \PHPUnit_Framework_TestCase
   public function testPutWithCollection()
   {
     $key = uniqid();
-    $kvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array("name" => "John")));
+    $kvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "John"]));
     $kvObject = self::$client->execute($kvPutOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertEquals('741357981fd7b5cb', $kvObject->getRef());
@@ -45,11 +45,11 @@ class KvTest extends \PHPUnit_Framework_TestCase
   public function testPutIfMatch()
   {
     $key = uniqid();
-    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array("name" => "Terry")));
+    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "Terry"]));
     $originalKvObject = self::$client->execute($originalKvPutOp);
     $originalRef = $originalKvObject->getRef();
 
-    $kvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array("name" => "Terrance")), array('if-match' => $originalRef));
+    $kvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "Terrance"]), ['if-match' => $originalRef]);
     $kvObject = self::$client->execute($kvPutOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertNotEquals($originalRef, $kvObject->getRef());
@@ -58,17 +58,17 @@ class KvTest extends \PHPUnit_Framework_TestCase
   public function testPutIfNoneMatch()
   {
     $key = uniqid();
-    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array("name" => "William")));
+    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "William"]));
     $originalKvObject = self::$client->execute($originalKvPutOp);
 
-    $kvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array("name" => "Bill")), array('if-none-match' => '*'));
+    $kvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "Bill"]), ['if-none-match' => '*']);
     $kvObject = self::$client->execute($kvPutOp);
     $this->assertNull($kvObject);
   }
 
   public function testPost()
   {
-    $kvPostOp = new KvPostOperation(self::$collection, json_encode(array("name" => "Adam")));
+    $kvPostOp = new KvPostOperation(self::$collection, json_encode(["name" => "Adam"]));
     $kvObject = self::$client->execute($kvPostOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $kvObject);
     $this->assertRegExp('/[a-f0-9]{16}/', $kvObject->getKey());
@@ -97,10 +97,10 @@ class KvTest extends \PHPUnit_Framework_TestCase
   public function testGetPreviousRef()
   {
     $key = uniqid();
-    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array("name" => "Leah")));
+    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "Leah"]));
     $originalKvObject = self::$client->execute($originalKvPutOp);
     $originalRef = $originalKvObject->getRef();
-    $updateKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array("name" => "Allegra")));
+    $updateKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "Allegra"]));
     $updateKvObject = self::$client->execute($updateKvPutOp);
 
     $kvFetchOp = new KvFetchOperation(self::$collection, $key, $originalRef);
@@ -156,16 +156,16 @@ class KvTest extends \PHPUnit_Framework_TestCase
   public function testPatchOperations()
   {
     $key = uniqid();
-    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(array(
+    $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode([
       "first_name" => "John",
       "full_name" => "John Foster",
       "age" => 28,
       "years_until_death" => 40,
-      "birth_place" => array(
+      "birth_place" => [
         "state" => "California",
         "country" => "USA",
-      ),
-    )));
+      ],
+    ]));
     $originalKvObject = self::$client->execute($originalKvPutOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\KvObject', $originalKvObject);
 

@@ -20,14 +20,14 @@ class EventTest extends \PHPUnit_Framework_TestCase
 
   public function testEventPutDefaultsToNow()
   {
-    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(array("message" => "This is my favorite movie!")));
+    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]));
     $result = self::$client->execute($evPutOp);
     $this->assertTrue($result);
   }
 
   public function testEventPutWithTimestamp()
   {
-    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(array("message" => "This is my favorite movie!")), self::$now);
+    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]), self::$now);
     $result = self::$client->execute($evPutOp);
     $this->assertTrue($result);
   }
