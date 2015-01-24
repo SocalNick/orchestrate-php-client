@@ -8,7 +8,7 @@ class KvPostOperation extends KvPutOperation implements PostOperationInterface
   {
     $this->collection = $collection;
     $this->data = $data;
-    $this->conditional = array();
+    $this->conditional = [];
   }
 
   public function getEndpoint()

@@ -23,7 +23,7 @@ class KvListOperation implements OperationInterface
 
   public function getEndpoint()
   {
-    $queryParams = array('limit' => $this->limit);
+    $queryParams = ['limit' => $this->limit];
     if ($this->startKey) {
       $queryParams['startKey'] = $this->startKey;
     } elseif ($this->afterKey) {

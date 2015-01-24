@@ -21,10 +21,10 @@ class GraphFetchOperation implements OperationInterface
 
   public function getEndpoint()
   {
-    $graphParams = array(
+    $graphParams = [
         'limit'  => $this->limit,
         'offset' => $this->offset,
-    );
+    ];
 
     return $this->collection  . '/' . $this->key . '/relations/' . $this->kind. '?' . http_build_query($graphParams);
   }

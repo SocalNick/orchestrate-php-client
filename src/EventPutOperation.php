@@ -16,7 +16,7 @@ class EventPutOperation extends EventFetchOperation implements PutOperationInter
 
   protected function getQueryParams()
   {
-    $queryParams = array();
+    $queryParams = [];
     if ($this->timestamp) {
       $queryParams['timestamp'] = $this->timestamp;
     }
@@ -26,9 +26,9 @@ class EventPutOperation extends EventFetchOperation implements PutOperationInter
 
   public function getHeaders()
   {
-    $headers = array(
+    $headers = [
       'Content-Type' => 'application/json',
-    );
+    ];
 
     return $headers;
   }

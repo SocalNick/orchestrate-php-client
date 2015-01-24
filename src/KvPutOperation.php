@@ -7,7 +7,7 @@ class KvPutOperation extends KvFetchOperation implements PutOperationInterface
   protected $data;
   protected $conditional;
 
-  public function __construct($collection, $key, $data, $conditional = array())
+  public function __construct($collection, $key, $data, $conditional = [])
   {
     parent::__construct($collection, $key);
     $this->data = $data;
@@ -16,9 +16,9 @@ class KvPutOperation extends KvFetchOperation implements PutOperationInterface
 
   public function getHeaders()
   {
-    $headers = array(
+    $headers = [
       'Content-Type' => 'application/json',
-    );
+    ];
 
     if (array_key_exists('if-match', $this->conditional)) {
       $headers['If-Match'] = "\"{$this->conditional['if-match']}\"";

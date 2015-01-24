@@ -25,12 +25,12 @@ class SearchOperation implements OperationInterface
 
   public function getEndpoint()
   {
-    $queryParams = array(
+    $queryParams = [
       'query' => $this->query,
       'limit' => $this->limit,
       'offset' => $this->offset,
       'sort' => $this->sort,
-    );
+    ];
 
     return $this->collection . '/?' . http_build_query($queryParams);
   }

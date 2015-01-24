@@ -2,7 +2,7 @@
 
 namespace SocalNick\Orchestrate;
 
-use Guzzle\Http as GuzzleHttp;
+use GuzzleHttp;
 
 /**
  * Orchestrate.io Client
@@ -40,12 +40,10 @@ class Client
     if ($httpClient) {
       $this->httpClient = $httpClient;
     } else {
-      $this->httpClient = new GuzzleHttp\Client(
-        'https://api.orchestrate.io/{version}',
-        array(
-          'version' => 'v0',
-        )
-      );
+      $this->httpClient = new GuzzleHttp\Client([
+        'base_url' => ['https://api.orchestrate.io/{version}/', ['version' => 'v0']],
+        'defaults' => ['auth' => [$apiKey, '']],
+      ]);
     }
   }
 
@@ -62,32 +60,25 @@ class Client
   {
     try {
       if ($op instanceof DeleteOperationInterface) {
-        $request = $this->httpClient->delete($op->getEndpoint());
+        $response = $this->httpClient->delete($op->getEndpoint());
       } elseif ($op instanceof PostOperationInterface) {
-        $request = $this->httpClient->post(
-          $op->getEndpoint(),
-          $op->getHeaders(),
-          $op->getData()
-        );
+        $response = $this->httpClient->post($op->getEndpoint(), [
+          'headers' => $op->getHeaders(),
+          'body' => $op->getData(),
+        ]);
       } elseif ($op instanceof PatchOperationInterface) {
-        $request = $this->httpClient->patch(
-          $op->getEndpoint(),
-          $op->getHeaders(),
-          $op->getData()
-        );
+        $response = $this->httpClient->patch($op->getEndpoint(), [
+          'headers' => $op->getHeaders(),
+          'body' => $op->getData(),
+        ]);
       } elseif ($op instanceof PutOperationInterface) {
-        $request = $this->httpClient->put(
-          $op->getEndpoint(),
-          $op->getHeaders(),
-          $op->getData()
-        );
+        $response = $this->httpClient->put($op->getEndpoint(), [
+          'headers' => $op->getHeaders(),
+          'body' => $op->getData(),
+        ]);
       } else {
-        $request = $this->httpClient->get($op->getEndpoint());
+        $response = $this->httpClient->get($op->getEndpoint());
       }
-
-      $request->setAuth($this->apiKey);
-      $response = $request->send();
-
     } catch (GuzzleHttp\Exception\BadResponseException $e) {
       // Client or server error
       return null;
@@ -100,14 +91,14 @@ class Client
       $refLink = str_replace('"', '', (string) $response->getHeader('ETag'));
     } elseif ($response->hasHeader('Link')) {
       $refLink = str_replace(
-        array('<', '>; rel="next"'),
-        array('', ''),
+        ['<', '>; rel="next"'],
+        ['', ''],
         (string) $response->getHeader('Link')
       );
     }
 
     if ($response->hasHeader('Location')) {
-      $location = $response->getLocation();
+      $location = $response->getHeader('Location');
     }
     $value = $response->json();
     $rawValue = $response->getBody(true);

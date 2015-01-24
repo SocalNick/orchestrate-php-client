@@ -28,7 +28,7 @@ class EventFetchOperation implements OperationInterface
 
   protected function getQueryParams()
   {
-    $queryParams = array();
+    $queryParams = [];
     if ($this->start) {
       $queryParams['start'] = $this->start;
     }

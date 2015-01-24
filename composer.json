@@ -8,10 +8,11 @@
             "email": "njcalugar@gmail.com"
         }
     ],
+    "keywords": ["orchestrate", "client", "guzzle"],
     "require": {
         "php": ">=5.4.0",
         "ext-curl": "*",
-        "guzzle/guzzle": "~3.8"
+        "guzzlehttp/guzzle": "~5.1"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"

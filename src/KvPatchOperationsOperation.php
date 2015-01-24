@@ -4,9 +4,9 @@ namespace SocalNick\Orchestrate;
 
 class KvPatchOperationsOperation extends KvPutOperation implements PatchOperationInterface
 {
-  public function __construct($collection, $key, $conditional = array())
+  public function __construct($collection, $key, $conditional = [])
   {
-    parent::__construct($collection, $key, array(), $conditional);
+    parent::__construct($collection, $key, [], $conditional);
   }
 
   public function getData()
@@ -16,21 +16,21 @@ class KvPatchOperationsOperation extends KvPutOperation implements PatchOperatio
 
   protected function pathValueOperation($operation, $path, $value)
   {
-    $this->data[] = array(
+    $this->data[] = [
       'op' => $operation,
       'path' => $path,
       'value' => $value,
-    );
+    ];
     return $this;
   }
 
   protected function fromPathOperation($operation, $from, $path)
   {
-    $this->data[] = array(
+    $this->data[] = [
       'op' => $operation,
       'from' => $from,
       'path' => $path,
-    );
+    ];
     return $this;
   }
 
@@ -66,10 +66,10 @@ class KvPatchOperationsOperation extends KvPutOperation implements PatchOperatio
 
   public function remove($path)
   {
-    $this->data[] = array(
+    $this->data[] = [
       'op' => __FUNCTION__,
       'path' => $path,
-    );
+    ];
     return $this;
   }
 }
