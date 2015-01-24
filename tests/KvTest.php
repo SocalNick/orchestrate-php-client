@@ -174,7 +174,7 @@ class KvTest extends \PHPUnit_Framework_TestCase
       ->add('birth_place.city', 'New York')
       ->remove('birth_place.country')
       ->replace('birth_place.state', 'New York')
-      /* ->move('first_name', 'deprecated.first_name') */
+      ->move('first_name', 'deprecated_first_name')
       ->copy('full_name', 'name')
       ->test('age', 28)
       ->inc('age', 1)
