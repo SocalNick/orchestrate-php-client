@@ -3,6 +3,7 @@
 namespace SocalNick\Orchestrate\Tests;
 
 use SocalNick\Orchestrate\Client;
+use SocalNick\Orchestrate\SearchAggregateOperation;
 use SocalNick\Orchestrate\SearchOperation;
 use SocalNick\Orchestrate\SearchResult;
 
@@ -31,7 +32,15 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     $this->assertInstanceOf('SocalNick\Orchestrate\SearchResult', $searchResult);
     $this->assertEquals(2, $searchResult->count());
     $this->assertEquals(8, $searchResult->totalCount());
-    $this->assertEquals('9113c836a4589e07', $searchResult->getValue()['results'][0]['path']['ref']);
+    $this->assertEquals('c7a422a18e146792', $searchResult->getValue()['results'][0]['path']['ref']);
   }
 
+  public function testSearchWithAggregates()
+  {
+    $searchOp = new SearchAggregateOperation("films", 'value.imdbRating:stats');
+    $searchResult = self::$client->execute($searchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\SearchResult', $searchResult);
+    $this->assertEquals(5.9, $searchResult->getValue()['aggregates'][0]['statistics']['min']);
+    $this->assertEquals(9.3, $searchResult->getValue()['aggregates'][0]['statistics']['max']);
+  }
 }
