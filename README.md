@@ -67,6 +67,25 @@ $kvPatchOperationsOp
 $result = $client->execute($kvPatchOperationsOp);
 ```
 
+## Patch (partial update - merge)
+```php
+use SocalNick\Orchestrate\KvPatchMergeOperation;
+$partial = [
+  'birth_place' => [
+    'city' => 'New York',
+    'country' => null,
+    'state' => 'New York',
+  ],
+  'first_name' => null,
+  'deprecated_first_name' => 'John',
+  'name' => 'John Foster',
+  'age' => 29,
+  'years_until_death' => 39,
+];
+$kvPatchMergeOp = new KvPatchMergeOperation('first_collection', 'third_key', json_encode($partial));
+$result = self::$client->execute($kvPatchMergeOp);
+```
+
 ## Get
 ```php
 use SocalNick\Orchestrate\KvFetchOperation;
@@ -150,6 +169,15 @@ $searchResult = $client->execute($searchOp);
 $count = $searchResult->count(); // 2
 $total = $searchResult->totalCount(); // 8
 $firstKey = $searchResult->getValue()['results'][0]['path']['key']; // lock_stock_and_two_smoking_barrels
+```
+
+## Search aggregate
+```php
+use SocalNick\Orchestrate\SearchAggregateOperation;
+$searchOp = new SearchAggregateOperation("films", 'value.imdbRating:stats');
+$searchResult = $client->execute($searchOp);
+$min = $searchResult->getValue()['aggregates'][0]['statistics']['min']; // 5.9
+$max = $searchResult->getValue()['aggregates'][0]['statistics']['max']; // 9.3
 ```
 
 # Events
