@@ -30,6 +30,20 @@ class SearchResult
     return $this->rawValue;
   }
 
+  public function getNext()
+  {
+    if (isset($this->value['next'])) {
+      return $this->value['next'];
+    }
+  }
+
+  public function getPrev()
+  {
+    if (isset($this->value['prev'])) {
+      return $this->value['prev'];
+    }
+  }
+
   public function count()
   {
     if (isset($this->value['count'])) {
