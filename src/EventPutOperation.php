@@ -2,7 +2,7 @@
 
 namespace SocalNick\Orchestrate;
 
-class EventPutOperation extends EventFetchOperation implements PutOperationInterface
+class EventPutOperation extends EventListOperation implements PutOperationInterface
 {
   protected $data;
   protected $timestamp;

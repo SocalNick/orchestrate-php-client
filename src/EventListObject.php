@@ -2,7 +2,7 @@
 
 namespace SocalNick\Orchestrate;
 
-class EventObject
+class EventListObject
 {
   protected $collection;
   protected $key;
