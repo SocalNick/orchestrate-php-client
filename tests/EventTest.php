@@ -4,6 +4,7 @@ namespace SocalNick\Orchestrate\Tests;
 
 use SocalNick\Orchestrate\Client;
 use SocalNick\Orchestrate\EventListOperation;
+use SocalNick\Orchestrate\EventPostOperation;
 use SocalNick\Orchestrate\EventPutOperation;
 use SocalNick\Orchestrate\EventListObject;
 
@@ -21,18 +22,23 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $result = self::$client->execute($evPutOp);
   }
 
-  public function testEventPutDefaultsToNow()
+  public function testEventPostDefaultsToNow()
   {
-    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]));
-    $result = self::$client->execute($evPutOp);
-    $this->assertTrue($result);
+    $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]));
+    $evPostResult = self::$client->execute($evPostOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventPostResult', $evPostResult);
+    $this->assertGreaterThan(self::$now - 5000, $evPostResult->getTimestamp());
+    $this->assertLessThan(self::$now + 5000, $evPostResult->getTimestamp());
+    $this->assertTrue(is_numeric($evPostResult->getOrdinal()));
   }
 
-  public function testEventPutWithTimestamp()
+  public function testEventPostWithTimestamp()
   {
-    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]), self::$now);
-    $result = self::$client->execute($evPutOp);
-    $this->assertTrue($result);
+    $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]), self::$now);
+    $evPostResult = self::$client->execute($evPostOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventPostResult', $evPostResult);
+    $this->assertEquals(self::$now, $evPostResult->getTimestamp());
+    $this->assertTrue(is_numeric($evPostResult->getOrdinal()));
   }
 
   public function testList()
