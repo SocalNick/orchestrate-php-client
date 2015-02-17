@@ -3,6 +3,7 @@
 namespace SocalNick\Orchestrate\Tests;
 
 use SocalNick\Orchestrate\Client;
+use SocalNick\Orchestrate\EventFetchOperation;
 use SocalNick\Orchestrate\EventListOperation;
 use SocalNick\Orchestrate\EventPostOperation;
 use SocalNick\Orchestrate\EventPutOperation;
@@ -12,14 +13,25 @@ class EventTest extends \PHPUnit_Framework_TestCase
 {
   protected static $client;
   protected static $now;
+  protected static $ordinal;
 
   public static function setUpBeforeClass()
   {
     self::$client = new Client(getenv('ORCHESTRATE_API_KEY'));
     self::$now = (int) microtime(true) * 1000;
 
-    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is a test event"]), self::$now);
-    $result = self::$client->execute($evPutOp);
+    $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is a test event"]), self::$now);
+    $evPostResult = self::$client->execute($evPostOp);
+    self::$ordinal = $evPostResult->getOrdinal();
+  }
+
+  public function testEventFetch()
+  {
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinal);
+    $evObject = self::$client->execute($evFetchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventObject', $evObject);
+    $value = $evObject->getValue();
+    $this->assertEquals('This is a test event', $value['value']['message']);
   }
 
   public function testEventPostDefaultsToNow()
