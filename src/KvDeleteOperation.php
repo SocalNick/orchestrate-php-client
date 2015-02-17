@@ -17,6 +17,11 @@ class KvDeleteOperation extends KvFetchOperation implements DeleteOperationInter
     return parent::getEndpoint() . ($this->purge ? '?purge=true' : '');
   }
 
+  public function getHeaders()
+  {
+    return [];
+  }
+
   public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
     return true;

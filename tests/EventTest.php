@@ -3,6 +3,7 @@
 namespace SocalNick\Orchestrate\Tests;
 
 use SocalNick\Orchestrate\Client;
+use SocalNick\Orchestrate\EventDeleteOperation;
 use SocalNick\Orchestrate\EventFetchOperation;
 use SocalNick\Orchestrate\EventListOperation;
 use SocalNick\Orchestrate\EventPostOperation;
@@ -13,7 +14,8 @@ class EventTest extends \PHPUnit_Framework_TestCase
 {
   protected static $client;
   protected static $now;
-  protected static $ordinal;
+  protected static $ordinalOne;
+  protected static $ordinalTwo;
 
   public static function setUpBeforeClass()
   {
@@ -22,16 +24,26 @@ class EventTest extends \PHPUnit_Framework_TestCase
 
     $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is a test event"]), self::$now);
     $evPostResult = self::$client->execute($evPostOp);
-    self::$ordinal = $evPostResult->getOrdinal();
+    self::$ordinalOne = $evPostResult->getOrdinal();
+
+    $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is another test event"]), self::$now);
+    $evPostResult = self::$client->execute($evPostOp);
+    self::$ordinalTwo = $evPostResult->getOrdinal();
   }
 
   public function testEventFetch()
   {
-    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinal);
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalOne);
     $evObject = self::$client->execute($evFetchOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\EventObject', $evObject);
     $value = $evObject->getValue();
     $this->assertEquals('This is a test event', $value['value']['message']);
+
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo);
+    $evObject = self::$client->execute($evFetchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventObject', $evObject);
+    $value = $evObject->getValue();
+    $this->assertEquals('This is another test event', $value['value']['message']);
   }
 
   public function testEventPostDefaultsToNow()
@@ -51,6 +63,30 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $this->assertInstanceOf('SocalNick\Orchestrate\EventPostResult', $evPostResult);
     $this->assertEquals(self::$now, $evPostResult->getTimestamp());
     $this->assertTrue(is_numeric($evPostResult->getOrdinal()));
+  }
+
+  public function testEventDelete()
+  {
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalOne);
+    $evObject = self::$client->execute($evFetchOp);
+
+    $evDeleteOp = new EventDeleteOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalOne, true);
+    $result = self::$client->execute($evDeleteOp);
+    $this->assertTrue($result);
+  }
+
+  public function testEventDeleteWithRef()
+  {
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo);
+    $evObject = self::$client->execute($evFetchOp);
+
+    $evDeleteOp = new EventDeleteOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo, true, 'bad-ref');
+    $result = self::$client->execute($evDeleteOp);
+    $this->assertNull($result);
+
+    $evDeleteOp = new EventDeleteOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo, true, $evObject->getRef());
+    $result = self::$client->execute($evDeleteOp);
+    $this->assertTrue($result);
   }
 
   public function testList()

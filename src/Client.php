@@ -60,7 +60,9 @@ class Client
   {
     try {
       if ($op instanceof DeleteOperationInterface) {
-        $response = $this->httpClient->delete($op->getEndpoint());
+        $response = $this->httpClient->delete($op->getEndpoint(), [
+          'headers' => $op->getHeaders(),
+        ]);
       } elseif ($op instanceof PostOperationInterface) {
         $response = $this->httpClient->post($op->getEndpoint(), [
           'headers' => $op->getHeaders(),
