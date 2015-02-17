@@ -2,26 +2,35 @@
 
 namespace SocalNick\Orchestrate;
 
-class EventPutOperation extends EventListOperation implements PutOperationInterface
+class EventPutOperation implements PutOperationInterface
 {
+  protected $collection;
+  protected $key;
+  protected $type;
   protected $data;
   protected $timestamp;
+  protected $ordinal;
+  protected $ref;
 
-  public function __construct($collection, $key, $type, $data, $timestamp = null)
+  public function __construct($collection, $key, $type, $data, $timestamp, $ordinal, $ref = null)
   {
-    parent::__construct($collection, $key, $type);
+    $this->collection = $collection;
+    $this->key = $key;
+    $this->type = $type;
     $this->data = $data;
     $this->timestamp = $timestamp;
+    $this->ordinal = $ordinal;
+    $this->ref = $ref;
   }
 
-  protected function getQueryParams()
+  public function getEndpoint()
   {
-    $queryParams = [];
-    if ($this->timestamp) {
-      $queryParams['timestamp'] = $this->timestamp;
-    }
+    return $this->collection  . '/' . $this->key . '/events/' . $this->type . '/' . $this->timestamp . '/' . $this->ordinal;
+  }
 
-    return $queryParams;
+  public function getData()
+  {
+    return $this->data;
   }
 
   public function getHeaders()
@@ -30,16 +39,22 @@ class EventPutOperation extends EventListOperation implements PutOperationInterf
       'Content-Type' => 'application/json',
     ];
 
-    return $headers;
-  }
+    if ($this->ref) {
+      $headers['If-Match'] = "\"{$this->ref}\"";
+    }
 
-  public function getData()
-  {
-    return $this->data;
+    return $headers;
   }
 
   public function getObjectFromResponse($ref, $location = null, $value = null, $rawValue = null)
   {
-    return true;
+    $matches = [];
+    $preg_return = preg_match("%/v0/{$this->collection}/{$this->key}/events/{$this->type}/([^/]+)/([^/]+)%s", $location, $matches);
+    if (!$preg_return) {
+      return null;
+    }
+    $timestamp = $matches[1];
+    $ordinal = $matches[2];
+    return new EventUpsertResult($this->collection, $this->key, $this->type, $ref, $timestamp, $ordinal);
   }
 }

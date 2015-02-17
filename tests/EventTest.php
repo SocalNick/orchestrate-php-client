@@ -50,7 +50,7 @@ class EventTest extends \PHPUnit_Framework_TestCase
   {
     $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]));
     $evPostResult = self::$client->execute($evPostOp);
-    $this->assertInstanceOf('SocalNick\Orchestrate\EventPostResult', $evPostResult);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventUpsertResult', $evPostResult);
     $this->assertGreaterThan(self::$now - 5000, $evPostResult->getTimestamp());
     $this->assertLessThan(self::$now + 5000, $evPostResult->getTimestamp());
     $this->assertTrue(is_numeric($evPostResult->getOrdinal()));
@@ -60,9 +60,49 @@ class EventTest extends \PHPUnit_Framework_TestCase
   {
     $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]), self::$now);
     $evPostResult = self::$client->execute($evPostOp);
-    $this->assertInstanceOf('SocalNick\Orchestrate\EventPostResult', $evPostResult);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventUpsertResult', $evPostResult);
     $this->assertEquals(self::$now, $evPostResult->getTimestamp());
     $this->assertTrue(is_numeric($evPostResult->getOrdinal()));
+  }
+
+  public function testEventPut()
+  {
+    $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => __FUNCTION__]));
+    $evPostResult = self::$client->execute($evPostOp);
+
+    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "Not this function"]), $evPostResult->getTimestamp(), $evPostResult->getOrdinal());
+    $evPutResult = self::$client->execute($evPutOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventUpsertResult', $evPutResult);
+    $this->assertEquals($evPostResult->getTimestamp(), $evPutResult->getTimestamp());
+    $this->assertEquals($evPostResult->getOrdinal(), $evPutResult->getOrdinal());
+
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", $evPostResult->getTimestamp(), $evPostResult->getOrdinal());
+    $evObject = self::$client->execute($evFetchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventObject', $evObject);
+    $value = $evObject->getValue();
+    $this->assertEquals('Not this function', $value['value']['message']);
+  }
+
+  public function testEventPutWithRef()
+  {
+    $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => __FUNCTION__]));
+    $evPostResult = self::$client->execute($evPostOp);
+
+    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "Not this function"]), $evPostResult->getTimestamp(), $evPostResult->getOrdinal(), 'bad-ref');
+    $evPutResult = self::$client->execute($evPutOp);
+    $this->assertNull($evPutResult);
+
+    $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "Not this function"]), $evPostResult->getTimestamp(), $evPostResult->getOrdinal(), $evPostResult->getRef());
+    $evPutResult = self::$client->execute($evPutOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventUpsertResult', $evPutResult);
+    $this->assertEquals($evPostResult->getTimestamp(), $evPutResult->getTimestamp());
+    $this->assertEquals($evPostResult->getOrdinal(), $evPutResult->getOrdinal());
+
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", $evPostResult->getTimestamp(), $evPostResult->getOrdinal());
+    $evObject = self::$client->execute($evFetchOp);
+    $this->assertInstanceOf('SocalNick\Orchestrate\EventObject', $evObject);
+    $value = $evObject->getValue();
+    $this->assertEquals('Not this function', $value['value']['message']);
   }
 
   public function testEventDelete()

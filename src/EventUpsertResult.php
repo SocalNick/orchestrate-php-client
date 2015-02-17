@@ -2,19 +2,21 @@
 
 namespace SocalNick\Orchestrate;
 
-class EventPostResult
+class EventUpsertResult
 {
   protected $collection;
   protected $key;
   protected $type;
+  protected $ref;
   protected $timestamp;
   protected $ordinal;
 
-  public function __construct($collection, $key, $type, $timestamp, $ordinal)
+  public function __construct($collection, $key, $type, $ref, $timestamp, $ordinal)
   {
     $this->collection = $collection;
     $this->key = $key;
     $this->type = $type;
+    $this->ref = $ref;
     $this->timestamp = $timestamp;
     $this->ordinal = $ordinal;
   }
@@ -32,6 +34,11 @@ class EventPostResult
   public function getType()
   {
     return $this->type;
+  }
+
+  public function getRef()
+  {
+    return $this->ref;
   }
 
   public function getTimestamp()
