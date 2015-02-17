@@ -33,7 +33,7 @@ class Client
    * @param string                     $apiKey
    * @param GuzzleHttp\ClientInterface $httpClient
    */
-  public function __construct($apiKey, GuzzleHttp\ClientInterface $httpClient = null)
+  public function __construct($apiKey, $baseUrl = 'https://api.orchestrate.io/{version}/', GuzzleHttp\ClientInterface $httpClient = null)
   {
     $this->apiKey = $apiKey;
 
@@ -41,7 +41,7 @@ class Client
       $this->httpClient = $httpClient;
     } else {
       $this->httpClient = new GuzzleHttp\Client([
-        'base_url' => ['https://api.orchestrate.io/{version}/', ['version' => 'v0']],
+        'base_url' => [$baseUrl, ['version' => 'v0']],
         'defaults' => ['auth' => [$apiKey, '']],
       ]);
     }
