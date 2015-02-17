@@ -83,14 +83,20 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals('Not this function', $value['value']['message']);
   }
 
-  public function testEventPutWithRef()
+  public function testEventPutWithBadRef()
   {
     $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => __FUNCTION__]));
     $evPostResult = self::$client->execute($evPostOp);
 
+    $this->setExpectedException('SocalNick\Orchestrate\Exception\ClientException');
     $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "Not this function"]), $evPostResult->getTimestamp(), $evPostResult->getOrdinal(), 'bad-ref');
     $evPutResult = self::$client->execute($evPutOp);
-    $this->assertNull($evPutResult);
+  }
+
+  public function testEventPutWithRef()
+  {
+    $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => __FUNCTION__]));
+    $evPostResult = self::$client->execute($evPostOp);
 
     $evPutOp = new EventPutOperation("films", "pulp_fiction", "comment", json_encode(["message" => "Not this function"]), $evPostResult->getTimestamp(), $evPostResult->getOrdinal(), $evPostResult->getRef());
     $evPutResult = self::$client->execute($evPutOp);
@@ -115,14 +121,20 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $this->assertTrue($result);
   }
 
-  public function testEventDeleteWithRef()
+  public function testEventDeleteWithBadRef()
   {
     $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo);
     $evObject = self::$client->execute($evFetchOp);
 
+    $this->setExpectedException('SocalNick\Orchestrate\Exception\ClientException');
     $evDeleteOp = new EventDeleteOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo, true, 'bad-ref');
     $result = self::$client->execute($evDeleteOp);
-    $this->assertNull($result);
+  }
+
+  public function testEventDeleteWithRef()
+  {
+    $evFetchOp = new EventFetchOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo);
+    $evObject = self::$client->execute($evFetchOp);
 
     $evDeleteOp = new EventDeleteOperation("films", "pulp_fiction", "comment", self::$now, self::$ordinalTwo, true, $evObject->getRef());
     $result = self::$client->execute($evDeleteOp);

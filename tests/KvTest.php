@@ -62,9 +62,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
     $originalKvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "William"]));
     $originalKvObject = self::$client->execute($originalKvPutOp);
 
+    $this->setExpectedException('SocalNick\Orchestrate\Exception\ClientException');
     $kvPutOp = new KvPutOperation(self::$collection, $key, json_encode(["name" => "Bill"]), ['if-none-match' => '*']);
     $kvObject = self::$client->execute($kvPutOp);
-    $this->assertNull($kvObject);
   }
 
   public function testPost()
@@ -77,9 +77,9 @@ class KvTest extends \PHPUnit_Framework_TestCase
 
   public function testKeyDoesNotExist404()
   {
+    $this->setExpectedException('SocalNick\Orchestrate\Exception\ClientException');
     $kvFetchOp = new KvFetchOperation(self::$collection, "missing_key");
     $kvObject = self::$client->execute($kvFetchOp);
-    $this->assertNull($kvObject);
   }
 
   public function testGet()

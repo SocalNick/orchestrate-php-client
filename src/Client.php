@@ -81,9 +81,10 @@ class Client
       } else {
         $response = $this->httpClient->get($op->getEndpoint());
       }
-    } catch (GuzzleHttp\Exception\BadResponseException $e) {
-      // Client or server error
-      return null;
+    } catch (GuzzleHttp\Exception\ClientException $e) {
+      throw new Exception\ClientException('ClientException occurred in request to Orchestrate: ' . $e->getMessage(), $e->getCode(), $e);
+    } catch (GuzzleHttp\Exception\ServerException $e) {
+      throw new Exception\ServerException('ServerException occurred in request to Orchestrate: ' . $e->getMessage(), $e->getCode(), $e);
     }
 
     $refLink = null;
