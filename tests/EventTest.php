@@ -51,8 +51,8 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $evPostOp = new EventPostOperation("films", "pulp_fiction", "comment", json_encode(["message" => "This is my favorite movie!"]));
     $evPostResult = self::$client->execute($evPostOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\EventUpsertResult', $evPostResult);
-    $this->assertGreaterThan(self::$now - 5000, $evPostResult->getTimestamp());
-    $this->assertLessThan(self::$now + 5000, $evPostResult->getTimestamp());
+    $this->assertGreaterThan(self::$now - 10000, $evPostResult->getTimestamp());
+    $this->assertLessThan(self::$now + 10000, $evPostResult->getTimestamp());
     $this->assertTrue(is_numeric($evPostResult->getOrdinal()));
   }
 
