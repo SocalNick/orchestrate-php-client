@@ -50,4 +50,11 @@ class EventListObject
       return $this->value['count'];
     }
   }
+
+  public function getNext()
+  {
+    if (isset($this->value['next'])) {
+      return $this->value['next'];
+    }
+  }
 }

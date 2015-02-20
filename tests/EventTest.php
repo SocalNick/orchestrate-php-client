@@ -147,6 +147,7 @@ class EventTest extends \PHPUnit_Framework_TestCase
     $evListObject = self::$client->execute($evListOp);
     $this->assertInstanceOf('SocalNick\Orchestrate\EventListObject', $evListObject);
     $this->assertGreaterThan(2, $evListObject->count());
+    $this->assertRegExp('#/v0/films/pulp_fiction/events/comment\?limit=10&beforeEvent=[0-9]+/[0-9]+#', $evListObject->getNext());
     $value = $evListObject->getValue();
     $this->assertInternalType('array', $value);
     $this->assertArrayHasKey('results', $value);
