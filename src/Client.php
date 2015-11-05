@@ -91,7 +91,7 @@ class Client
     $location = null;
 
     if ($response->hasHeader('ETag')) {
-        $refLink = str_replace('"', '', $response->getHeaderLine('ETag'));
+      $refLink = str_replace('"', '', $response->getHeaderLine('ETag'));
     } elseif ($response->hasHeader('Link')) {
       $refLink = str_replace(
         ['<', '>; rel="next"'],
@@ -101,7 +101,7 @@ class Client
     }
 
     if ($response->hasHeader('Location')) {
-      $location = $response->getHeader('Location');
+      $location = $response->getHeaderLine('Location');
     }
     $rawValue = $response->getBody(true);
     $value = json_decode($rawValue, true);
