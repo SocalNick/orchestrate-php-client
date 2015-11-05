@@ -33,7 +33,7 @@ class Client
    * @param string                     $apiKey
    * @param GuzzleHttp\ClientInterface $httpClient
    */
-  public function __construct($apiKey, $baseUrl = 'https://api.orchestrate.io/{version}/', GuzzleHttp\ClientInterface $httpClient = null)
+  public function __construct($apiKey, $baseUrl = 'https://api.orchestrate.io/v0/', GuzzleHttp\ClientInterface $httpClient = null)
   {
     $this->apiKey = $apiKey;
 
@@ -41,8 +41,8 @@ class Client
       $this->httpClient = $httpClient;
     } else {
       $this->httpClient = new GuzzleHttp\Client([
-        'base_url' => [$baseUrl, ['version' => 'v0']],
-        'defaults' => ['auth' => [$apiKey, '']],
+        'base_uri' => $baseUrl,
+        'auth' => [$apiKey, ''],
       ]);
     }
   }
@@ -91,7 +91,7 @@ class Client
     $location = null;
 
     if ($response->hasHeader('ETag')) {
-      $refLink = str_replace('"', '', (string) $response->getHeader('ETag'));
+      $refLink = str_replace('"', '', (string) $response->getHeaderLine('ETag'));
     } elseif ($response->hasHeader('Link')) {
       $refLink = str_replace(
         ['<', '>; rel="next"'],
@@ -103,8 +103,8 @@ class Client
     if ($response->hasHeader('Location')) {
       $location = $response->getHeader('Location');
     }
-    $value = $response->json();
     $rawValue = $response->getBody(true);
+    $value = json_decode($rawValue, true);
 
     return $op->getObjectFromResponse($refLink, $location, $value, $rawValue);
   }
