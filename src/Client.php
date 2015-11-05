@@ -91,12 +91,12 @@ class Client
     $location = null;
 
     if ($response->hasHeader('ETag')) {
-      $refLink = str_replace('"', '', (string) $response->getHeaderLine('ETag'));
+        $refLink = str_replace('"', '', $response->getHeaderLine('ETag'));
     } elseif ($response->hasHeader('Link')) {
       $refLink = str_replace(
         ['<', '>; rel="next"'],
         ['', ''],
-        (string) $response->getHeader('Link')
+        $response->getHeaderLine('Link')
       );
     }
 
