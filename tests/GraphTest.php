@@ -64,8 +64,8 @@ class GraphTest extends \PHPUnit_Framework_TestCase
     $graphFetchOp = new GraphFetchOperation("directors", "francis_ford_coppola", "films_directed", 1, 1);
     $graphObject = self::$client->execute($graphFetchOp);
     $this->assertEquals(1, $graphObject->count());
-    $this->assertEquals('/v0/directors/francis_ford_coppola/relations/films_directed?limit=1&offset=2', $graphObject->getNext());
-    $this->assertEquals('/v0/directors/francis_ford_coppola/relations/films_directed?limit=1&offset=0', $graphObject->getPrev());
+    $this->assertEquals('/v0/directors/francis_ford_coppola/relations/films_directed?offset=2&limit=1', $graphObject->getNext());
+    $this->assertEquals('/v0/directors/francis_ford_coppola/relations/films_directed?offset=0&limit=1', $graphObject->getPrev());
   }
 
   public function testDelete()

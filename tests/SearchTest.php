@@ -33,8 +33,8 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals(2, $searchResult->count());
     $this->assertEquals(8, $searchResult->totalCount());
     $this->assertEquals('c7a422a18e146792', $searchResult->getValue()['results'][0]['path']['ref']);
-    $this->assertEquals('/v0/films/?limit=2&sort=value.Title%3Aasc&query=Genre%3A%2ACrime%2A&offset=4', $searchResult->getNext());
-    $this->assertEquals('/v0/films/?limit=2&sort=value.Title%3Aasc&query=Genre%3A%2ACrime%2A&offset=0', $searchResult->getPrev());
+    $this->assertEquals('/v0/films/?offset=4&query=Genre%3A%2ACrime%2A&limit=2&sort=value.Title%3Aasc', $searchResult->getNext());
+    $this->assertEquals('/v0/films/?offset=0&query=Genre%3A%2ACrime%2A&limit=2&sort=value.Title%3Aasc', $searchResult->getPrev());
   }
 
   public function testSearchWithAggregates()
