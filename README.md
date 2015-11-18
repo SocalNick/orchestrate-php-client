@@ -31,7 +31,7 @@ $client = new Client('your-api-key');
 ## Use Amazon EU West
 ```php
 use SocalNick\Orchestrate\Client;
-$client = new Client('your-api-key', 'https://api.aws-eu-west-1.orchestrate.io/{version}/');
+$client = new Client('your-api-key', 'https://api.aws-eu-west-1.orchestrate.io/v0/');
 ```
 
 # Key / Value Operations
